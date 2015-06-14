@@ -2716,6 +2716,17 @@ DLLEXPORT void *jl_gc_counted_malloc(size_t sz)
     return b;
 }
 
+DLLEXPORT void *jl_gc_counted_calloc(size_t num, size_t sz)
+{
+    maybe_collect();
+    allocd_bytes += num*sz;
+    gc_num.malloc++;
+    void *b = calloc(num, sz);
+    if (b == NULL)
+        jl_throw(jl_memory_exception);
+    return b;
+}
+
 DLLEXPORT void jl_gc_counted_free(void *p, size_t sz)
 {
     free(p);
