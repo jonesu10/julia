@@ -1,62 +1,9 @@
 # -*- mode: makefile-gmake -*-
 
-## Note:
-##   It is generally preferable to change these options, for
-##   your local machine, in a file named `Make.user` in this directory
-
-# OPENBLAS build options
-OPENBLAS_TARGET_ARCH=
-OPENBLAS_SYMBOLSUFFIX=
-
-# If OPENBLAS_TARGET_ARCH is set, we default to disabling OPENBLAS_DYNAMIC_ARCH
-ifneq ($(OPENBLAS_TARGET_ARCH),)
-OPENBLAS_DYNAMIC_ARCH=0
-else
-OPENBLAS_DYNAMIC_ARCH=1
-endif
-OPENBLAS_USE_THREAD=1
-
-# Use libraries available on the system instead of building them
-USE_SYSTEM_LLVM=0
-USE_SYSTEM_LIBUNWIND=0
-USE_SYSTEM_PCRE=0
-USE_SYSTEM_LIBM=0
-USE_SYSTEM_OPENLIBM=0
-UNTRUSTED_SYSTEM_LIBM=0
-USE_SYSTEM_OPENSPECFUN=0
-USE_SYSTEM_DSFMT=0
-USE_SYSTEM_BLAS=0
-USE_SYSTEM_LAPACK=0
-USE_SYSTEM_FFTW=0
-USE_SYSTEM_GMP=0
-USE_SYSTEM_MPFR=0
-USE_SYSTEM_ARPACK=0
-USE_SYSTEM_SUITESPARSE=0
-USE_SYSTEM_LIBUV=0
-USE_SYSTEM_UTF8PROC=0
-USE_SYSTEM_LIBGIT2=0
-USE_SYSTEM_PATCHELF=0
-
-# Link to the LLVM shared library
-USE_LLVM_SHLIB = 0
-
 ## Settings for various Intel tools
-# Set to 1 to use MKL
-USE_INTEL_MKL ?= 0
-# Set to 1 to use MKL FFT
-USE_INTEL_MKL_FFT ?= 0
-# Set to 1 to use Intel LIBM
-USE_INTEL_LIBM ?= 0
-# Set to 1 to enable profiling with Intel VTune Amplifier
-USE_INTEL_JITEVENTS ?= 0
 # Set to 1 to use Intel C, C++, and FORTRAN compilers
 USEICC  ?= 0
 USEIFC  ?= 0
-
-ifeq ($(USE_MKL), 1)
-$(warning "The julia make variable USE_MKL has been renamed to USE_INTEL_MKL")
-USE_INTEL_MKL = 1
-endif
 
 # libc++ is standard on OS X 10.9, but not for earlier releases
 USE_LIBCPP = 0
@@ -66,11 +13,6 @@ HAVE_SSP = 0
 
 # Prevent picking up $ARCH from the environment variables
 ARCH=
-
-# we include twice to pickup user definitions better
-ifeq (exists, $(shell [ -e $(JULIAHOME)/Make.user ] && echo exists ))
-include $(JULIAHOME)/Make.user
-endif
 
 # disable automatic Makefile rules
 .SUFFIXES:
