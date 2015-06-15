@@ -1,4 +1,3 @@
-JULIAHOME = $(abspath .)
 include $(JULIAHOME)/Make.inc
 
 # TODO: Code bundled with Julia should be installed into a versioned directory,

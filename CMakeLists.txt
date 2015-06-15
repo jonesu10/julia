@@ -1,18 +1,22 @@
-project(Julia)
+project(Julia NONE)
+# Do not enable any languages yet because we might want to set compilers
 
-## Setup
+## Setup cmake paths
 cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}"
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-## Version
-set(JULIA_VERSION_MAJOR "0")
-set(JULIA_VERSION_MINOR "4")
-set(JULIA_VERSION_PATCH "0")
-
-find_package(Git QUIET)
-
+# Utilities for defining options
 include(JuliaOptions)
+
+# Set versions
+include(JuliaVersion)
+
+jl_str_option(ARCH "" "")
+
+include(JuliaCompilers)
+
+enable_language(C CXX Fortran)
 
 # OPENBLAS build options
 jl_str_option(OPENBLAS_TARGET_ARCH "OpenBLAS Arch" "")
@@ -47,7 +51,11 @@ use_system_opt(UTF8PROC)
 use_system_opt(LIBGIT2)
 use_system_opt(PATCHELF)
 
+jl_option(USE_GPL_LIBS "Whether to use GPL libraries or not." On)
+
 jl_option(USE_LLVM_SHLIB "Link to the LLVM shared library" Off)
+
+include(JuliaDirs)
 
 ## Settings for various Intel tools
 jl_option(USE_INTEL_MKL "Use MKL" Off)
@@ -55,6 +63,8 @@ jl_option(USE_INTEL_MKL_FFT "Use MKL FFT" Off)
 jl_option(USE_INTEL_LIBM "Use Intel LIBM" Off)
 jl_option(USE_INTEL_JITEVENTS
   "Enable profiling with Intel VTune Amplifier" Off)
+
+jl_set_make_flag(CMAKE "${CMAKE_COMMAND}")
 
 jl_get_make_flags(jl_make_flags)
 

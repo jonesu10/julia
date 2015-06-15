@@ -1,75 +1,7 @@
 # -*- mode: makefile-gmake -*-
 
-## Settings for various Intel tools
-# Set to 1 to use Intel C, C++, and FORTRAN compilers
-USEICC  ?= 0
-USEIFC  ?= 0
-
-# libc++ is standard on OS X 10.9, but not for earlier releases
-USE_LIBCPP = 0
-
-# assume we don't have LIBSSP support in our compiler, will enable later if likely true
-HAVE_SSP = 0
-
-# Prevent picking up $ARCH from the environment variables
-ARCH=
-
 # disable automatic Makefile rules
 .SUFFIXES:
-
-# find out if git repository is available
-ifeq ($(shell [ -e $(JULIAHOME)/.git ] && echo true || echo "Warning: git information unavailable; versioning information limited" >&2), true)
-NO_GIT = 0
-else
-NO_GIT = 1
-endif
-
-JULIA_VERSION = $(shell cat $(JULIAHOME)/VERSION)
-ifneq ($(NO_GIT), 1)
-JULIA_COMMIT = $(shell git rev-parse --short=10 HEAD)
-else
-JULIA_COMMIT = $(JULIA_VERSION)
-endif
-
-# Whether to use GPL libraries or not.
-USE_GPL_LIBS ?= 1
-
-# Directories where said libraries get installed to
-prefix ?= $(abspath julia-$(JULIA_COMMIT))
-bindir = $(prefix)/bin
-libdir = $(prefix)/lib
-private_libdir = $(libdir)/julia
-libexecdir = $(prefix)/libexec
-datarootdir = $(prefix)/share
-docdir = $(datarootdir)/doc/julia
-mandir = $(datarootdir)/man
-man1dir = $(mandir)/man1
-includedir = $(prefix)/include
-sysconfdir = $(prefix)/etc
-
-# Directories where things get built into
-build_prefix = $(JULIAHOME)/usr
-build_staging = $(build_prefix)-staging
-build_bindir = $(build_prefix)/bin
-build_libdir = $(build_prefix)/lib
-build_private_libdir = $(build_prefix)/lib/julia
-build_libexecdir = $(build_prefix)/libexec
-build_datarootdir = $(build_prefix)/share
-build_docdir = $(build_datarootdir)/doc/julia
-build_mandir = $(build_datarootdir)/man
-build_man1dir = $(build_mandir)/man1
-build_includedir = $(build_prefix)/include
-build_sysconfdir = $(build_prefix)/etc
-
-
-# Calculate relative paths to libdir, private_libdir, datarootdir, and sysconfdir
-build_libdir_rel = $(shell $(JULIAHOME)/contrib/relative_path.sh $(build_bindir) $(build_libdir))
-libdir_rel = $(shell $(JULIAHOME)/contrib/relative_path.sh $(bindir) $(libdir))
-build_private_libdir_rel = $(shell $(JULIAHOME)/contrib/relative_path.sh $(build_bindir) $(build_private_libdir))
-private_libdir_rel = $(shell $(JULIAHOME)/contrib/relative_path.sh $(bindir) $(private_libdir))
-datarootdir_rel = $(shell $(JULIAHOME)/contrib/relative_path.sh $(bindir) $(datarootdir))
-docdir_rel = $(shell $(JULIAHOME)/contrib/relative_path.sh $(bindir) $(docdir))
-sysconfdir_rel = $(shell $(JULIAHOME)/contrib/relative_path.sh $(bindir) $(sysconfdir))
 
 INSTALL_F = $(JULIAHOME)/contrib/install.sh 644
 INSTALL_M = $(JULIAHOME)/contrib/install.sh 755
@@ -94,9 +26,6 @@ BUILD_LLDB = 0
 # Cross-compile
 #XC_HOST = i686-w64-mingw32
 #XC_HOST = x86_64-w64-mingw32
-
-# Path to cmake (override in Make.user if needed)
-CMAKE ?= cmake
 
 # Figure out OS and architecture
 BUILD_OS := $(shell uname)
@@ -156,7 +85,6 @@ fPIC = -fPIC
 EXE =
 endif
 
-JULIAGC = MARKSWEEP
 USE_COPY_STACKS = 1
 
 # flag for disabling assertions
@@ -167,26 +95,6 @@ DISABLE_ASSERTIONS = -DNDEBUG
 endif
 
 # Compiler specific stuff
-
-ifeq ($(USEMSVC), 1)
-USEGCC = 0
-USECLANG = 0
-USEICC = 0
-else
-ifeq ($(USECLANG), 1)
-USEGCC = 0
-USEICC = 0
-else
-ifeq ($(USEICC), 1)
-USEGCC = 0
-USECLANG = 0
-else  # default to gcc
-USEGCC = 1
-USECLANG = 0
-USEICC = 0
-endif
-endif
-endif
 
 ifeq ($(USEIFC), 1)
 FC = ifort

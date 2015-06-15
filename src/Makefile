@@ -40,9 +40,7 @@ DOBJS = $(SRCS:%=$(BUILDDIR)/%.dbg.obj)
 DEBUGFLAGS += $(FLAGS)
 SHIPFLAGS += $(FLAGS)
 
-ifeq ($(JULIAGC),MARKSWEEP)
 SRCS += gc
-endif
 
 ifeq ($(USE_COPY_STACKS),1)
 JCFLAGS += -DCOPY_STACKS
