@@ -1,5 +1,11 @@
 #
 
+# libc++ is standard on OS X 10.9, but not for earlier releases
+jl_option(USE_LIBCPP "Use libc++" Off)
+# assume we don't have LIBSSP support in our compiler,
+# will enable later if likely true
+jl_option(HAVE_SSP "Have LibSSP support" Off)
+
 jl_set_option(USEICC Off)
 jl_set_option(USEGCC Off)
 jl_set_option(USECLANG Off)

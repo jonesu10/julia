@@ -16,12 +16,6 @@ jl_str_option(ARCH "" "")
 jl_set_option(JL_IS_MINGW "${MINGW}")
 jl_set_option(JL_IS_MSYS "${MSYS}")
 
-# libc++ is standard on OS X 10.9, but not for earlier releases
-jl_option(USE_LIBCPP "Use libc++" Off)
-# assume we don't have LIBSSP support in our compiler,
-# will enable later if likely true
-jl_option(HAVE_SSP "Have LibSSP support" Off)
-
 include(JuliaCCompiler)
 
 # TODO only enable if necessary
@@ -131,10 +125,7 @@ add_custom_command(OUTPUT "${build_man1dir}/julia.1"
 add_custom_target(julia-man1
   DEPENDS "${build_man1dir}/julia.1")
 
-add_custom_target(julia-deps
-  COMMAND make ${jl_make_flags}
-  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/deps"
-  DEPENDS juliarc-jl julia-man1)
+add_subdirectory(deps)
 
 add_custom_target(julia ALL
   DEPENDS julia-deps
