@@ -2,6 +2,11 @@
 JULIAHOME = $(abspath ..)
 include $(JULIAHOME)/Make.inc
 
+INSTALL_F = $(JULIAHOME)/contrib/install.sh 644
+INSTALL_M = $(JULIAHOME)/contrib/install.sh 755
+JLDOWNLOAD = $(JULIAHOME)/deps/jldownload
+JLCHECKSUM = $(JULIAHOME)/deps/jlchecksum
+
 # Special comments:
 #
 # all targets in here should follow the same structure,

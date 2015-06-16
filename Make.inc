@@ -3,16 +3,10 @@
 # disable automatic Makefile rules
 .SUFFIXES:
 
-INSTALL_F = $(JULIAHOME)/contrib/install.sh 644
-INSTALL_M = $(JULIAHOME)/contrib/install.sh 755
-
 # Figure out OS and architecture
 BUILD_OS := $(shell uname)
 
 HOSTCC = $(CC)
-
-JLDOWNLOAD = $(JULIAHOME)/deps/jldownload
-JLCHECKSUM = $(JULIAHOME)/deps/jlchecksum
 
 # Figure out OS and architecture
 OS := $(BUILD_OS)
