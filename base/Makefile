@@ -1,5 +1,4 @@
 JULIAHOME = ..
-include ../deps/Versions.make
 include ../Make.inc
 
 TAGGED_RELEASE_BANNER = ""

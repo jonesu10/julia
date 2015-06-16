@@ -1,5 +1,4 @@
 JULIAHOME = $(abspath ..)
-include $(JULIAHOME)/deps/Versions.make
 include $(JULIAHOME)/Make.inc
 
 override CFLAGS += $(JCFLAGS)

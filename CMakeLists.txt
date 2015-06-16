@@ -1,5 +1,4 @@
-project(Julia NONE)
-# Do not enable any languages yet because we might want to set compilers
+project(Julia C CXX)
 
 ## Setup cmake paths
 cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
@@ -12,11 +11,22 @@ include(JuliaOptions)
 # Set versions
 include(JuliaVersion)
 
+# Architecture and compiler/flags
 jl_str_option(ARCH "" "")
+jl_set_option(JL_IS_MINGW "${MINGW}")
+jl_set_option(JL_IS_MSYS "${MSYS}")
 
-include(JuliaCompilers)
+# libc++ is standard on OS X 10.9, but not for earlier releases
+jl_option(USE_LIBCPP "Use libc++" Off)
+# assume we don't have LIBSSP support in our compiler,
+# will enable later if likely true
+jl_option(HAVE_SSP "Have LibSSP support" Off)
 
-enable_language(C CXX Fortran)
+include(JuliaCCompiler)
+
+# TODO only enable if necessary
+enable_language(Fortran)
+include(JuliaFortranCompiler)
 
 # OPENBLAS build options
 jl_str_option(OPENBLAS_TARGET_ARCH "OpenBLAS Arch" "")
@@ -30,6 +40,7 @@ else()
 endif()
 jl_option(OPENBLAS_USE_THREAD "" On)
 
+# use_system options
 use_system_opt(LLVM)
 use_system_opt(LIBUNWIND)
 use_system_opt(PCRE)
@@ -53,9 +64,17 @@ use_system_opt(PATCHELF)
 
 jl_option(USE_GPL_LIBS "Whether to use GPL libraries or not." On)
 
+# LLVM related options
 jl_option(USE_LLVM_SHLIB "Link to the LLVM shared library" Off)
+jl_option(LLVM_ASSERTIONS "" Off)
+jl_option(LLVM_DEBUG "" Off)
+# Enable to get lldb (often does not work, no chance with llvm3.2 and earlier)
+# see http://lldb.llvm.org/build.html for dependencies
+jl_option(BUILD_LLDB "Build lldb" Off)
+jl_option(BUILD_LLVM_CLANG "Build clang and compiler-rt" ${BUILD_LLDB})
 
 include(JuliaDirs)
+include(JuliaDeps)
 
 ## Settings for various Intel tools
 jl_option(USE_INTEL_MKL "Use MKL" Off)
@@ -68,8 +87,56 @@ jl_set_make_flag(CMAKE "${CMAKE_COMMAND}")
 
 jl_get_make_flags(jl_make_flags)
 
-message("${jl_make_flags}")
+# message("${jl_make_flags}")
+
+# This is the trick in cmake to have proper dependency on a file
+# For another command that depend on the output of this which needs to be
+# updated automatically. The (custom) command should depend on the file output
+# and the corresponding (custom) target should depend on this target.
+if(WIN32 OR CYGWIN)
+  add_custom_command(OUTPUT "${build_sysconfdir}/julia/juliarc.jl"
+    COMMAND "${CMAKE_COMMAND}"
+    "-DNSRC=2" "-DSRC1=${CMAKE_SOURCE_DIR}/etc/juliarc.jl"
+    "-DSRC2=${CMAKE_SOURCE_DIR}/contrib/windows/juliarc.jl"
+    "-DDST=${build_sysconfdir}/julia/juliarc.jl"
+    -P "${CMAKE_SOURCE_DIR}/cmake/CatFiles.cmake"
+    DEPENDS etc/juliarc.jl contrib/windows/juliarc.jl
+    "${CMAKE_SOURCE_DIR}/cmake/CatFiles.cmake")
+elseif(APPLE)
+  add_custom_command(OUTPUT "${build_sysconfdir}/julia/juliarc.jl"
+    COMMAND "${CMAKE_COMMAND}"
+    "-DNSRC=2" "-DSRC1=${CMAKE_SOURCE_DIR}/etc/juliarc.jl"
+    "-DSRC2=${CMAKE_SOURCE_DIR}/contrib/mac/juliarc.jl"
+    "-DDST=${build_sysconfdir}/julia/juliarc.jl"
+    -P "${CMAKE_SOURCE_DIR}/cmake/CatFiles.cmake"
+    DEPENDS etc/juliarc.jl contrib/mac/juliarc.jl
+    "${CMAKE_SOURCE_DIR}/cmake/CatFiles.cmake")
+else()
+  add_custom_command(OUTPUT "${build_sysconfdir}/julia/juliarc.jl"
+    COMMAND "${CMAKE_COMMAND}" -E copy
+    "${CMAKE_SOURCE_DIR}/etc/juliarc.jl"
+    "${build_sysconfdir}/julia/juliarc.jl"
+    DEPENDS etc/juliarc.jl)
+endif()
+
+add_custom_target(juliarc-jl
+  DEPENDS "${build_sysconfdir}/julia/juliarc.jl")
+
+add_custom_command(OUTPUT "${build_man1dir}/julia.1"
+  COMMAND "${CMAKE_COMMAND}" -E copy
+  "${CMAKE_SOURCE_DIR}/doc/man/julia.1"
+  "${build_man1dir}/julia.1"
+  DEPENDS doc/man/julia.1)
+
+add_custom_target(julia-man1
+  DEPENDS "${build_man1dir}/julia.1")
+
+add_custom_target(julia-deps
+  COMMAND make ${jl_make_flags}
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/deps"
+  DEPENDS juliarc-jl julia-man1)
 
 add_custom_target(julia ALL
+  DEPENDS julia-deps
   COMMAND make ${jl_make_flags}
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")

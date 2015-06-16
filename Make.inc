@@ -6,84 +6,16 @@
 INSTALL_F = $(JULIAHOME)/contrib/install.sh 644
 INSTALL_M = $(JULIAHOME)/contrib/install.sh 755
 
-# This used for debian packaging, to conform to library layout guidelines
-ifeq ($(MULTIARCH_INSTALL), 1)
-MULTIARCH = $(shell gcc -print-multiarch)
-private_libdir = $(prefix)/lib/$(MULTIARCH)/julia
-libdir = $(prefix)/lib/$(MULTIARCH)/
-endif
-
-# LLVM Options
-LLVMROOT = $(build_prefix)
-LLVM_ASSERTIONS = 0
-LLVM_DEBUG = 0
-# set to 1 to get clang and compiler-rt
-BUILD_LLVM_CLANG = 0
-# set to 1 to get lldb (often does not work, no chance with llvm3.2 and earlier)
-# see http://lldb.llvm.org/build.html for dependencies
-BUILD_LLDB = 0
-
-# Cross-compile
-#XC_HOST = i686-w64-mingw32
-#XC_HOST = x86_64-w64-mingw32
-
 # Figure out OS and architecture
 BUILD_OS := $(shell uname)
 
-ifneq (,$(findstring CYGWIN,$(BUILD_OS)))
-XC_HOST ?= $(shell uname -m)-w64-mingw32
-endif
-
-ifeq ($(XC_HOST),)
-CROSS_COMPILE=
 HOSTCC = $(CC)
-else
-HOSTCC = gcc
-override OPENBLAS_DYNAMIC_ARCH = 1
-override CROSS_COMPILE=$(XC_HOST)-
-ifneq (,$(findstring mingw,$(XC_HOST)))
-override OS := WINNT
-ifneq (,$(findstring CYGWIN,$(BUILD_OS)))
-export STD_LIB_PATH := $(shell $(CROSS_COMPILE)gcc -print-search-dirs | grep programs | sed -e "s/^programs: =//" -e "s!/lib/!/bin/!g")
-export STD_LIB_PATH := $(STD_LIB_PATH):$(shell $(CROSS_COMPILE)gcc -print-search-dirs | grep libraries | sed -e "s/^libraries: =//" -e "s!/lib/!/bin/!g")
-else
-export STD_LIB_PATH := $(shell $(CROSS_COMPILE)gcc -print-search-dirs | grep programs | sed "s/^programs: =//" | xargs -d":" winepath -w | tr '\n' ';')
-export STD_LIB_PATH := $(STD_LIB_PATH);$(shell $(CROSS_COMPILE)gcc -print-search-dirs | grep libraries | sed "s/^libraries: =//" | xargs -d":" winepath -w | tr '\n' ';')
-endif
-else
-$(error "unknown XC_HOST variable set")
-endif
-endif
 
 JLDOWNLOAD = $(JULIAHOME)/deps/jldownload
 JLCHECKSUM = $(JULIAHOME)/deps/jlchecksum
 
 # Figure out OS and architecture
 OS := $(BUILD_OS)
-
-ifneq (,$(findstring MINGW,$(OS)))
-override OS := WINNT
-endif
-ifneq (,$(findstring MINGW,$(BUILD_OS)))
-override BUILD_OS := WINNT
-endif
-ifneq (,$(findstring MSYS,$(OS)))
-override OS := WINNT
-endif
-ifneq (,$(findstring MSYS,$(BUILD_OS)))
-override BUILD_OS := WINNT
-endif
-
-ifeq ($(OS), WINNT)
-fPIC =
-ifeq ($(BUILD_OS), WINNT)
-PATH := $(PATH):$(build_libdir):$(build_private_libdir):/c/Program Files/7-zip
-endif
-EXE = .exe
-else
-fPIC = -fPIC
-EXE =
-endif
 
 USE_COPY_STACKS = 1
 
@@ -99,7 +31,7 @@ endif
 ifeq ($(USEIFC), 1)
 FC = ifort
 else
-FC = $(CROSS_COMPILE)gfortran
+FC = gfortran
 endif
 
 STDLIBCPP_FLAG =
@@ -132,21 +64,21 @@ endif
 ifeq ($(SANITIZE),1)
 $(error Address Sanitizer only supported with clang. Try setting SANITIZE=0)
 endif
-CC = $(CROSS_COMPILE)gcc
-CXX = $(CROSS_COMPILE)g++
-JCFLAGS = -std=gnu99 -pipe $(fPIC) -fno-strict-aliasing -D_FILE_OFFSET_BITS=64
+CC = gcc
+CXX = g++
+JCFLAGS = -std=gnu99 -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64
 JCPPFLAGS =
-JCXXFLAGS = -pipe $(fPIC) -fno-rtti
+JCXXFLAGS = -pipe -fPIC -fno-rtti
 DEBUGFLAGS = -O0 -ggdb3 -DJL_DEBUG_BUILD -fstack-protector-all
 SHIPFLAGS = -O3 -ggdb3 -falign-functions
 endif
 
 ifeq ($(USECLANG),1)
-CC = $(CROSS_COMPILE)clang
-CXX = $(CROSS_COMPILE)clang++
-JCFLAGS = -pipe $(fPIC) -fno-strict-aliasing -D_FILE_OFFSET_BITS=64
+CC = clang
+CXX = clang++
+JCFLAGS = -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64
 JCPPFLAGS =
-JCXXFLAGS = -pipe $(fPIC) -fno-rtti
+JCXXFLAGS = -pipe -fPIC -fno-rtti
 DEBUGFLAGS = -O0 -g -DJL_DEBUG_BUILD -fstack-protector-all
 SHIPFLAGS = -O3 -g
 ifeq ($(OS), Darwin)
@@ -171,9 +103,9 @@ $(error Address Sanitizer only supported with clang. Try setting SANITIZE=0)
 endif
 CC  = icc
 CXX = icpc
-JCFLAGS = -std=gnu99 -pipe $(fPIC) -fno-strict-aliasing -D_FILE_OFFSET_BITS=64 -fp-model precise -fp-model except -no-ftz
+JCFLAGS = -std=gnu99 -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64 -fp-model precise -fp-model except -no-ftz
 JCPPFLAGS =
-JCXXFLAGS = -pipe $(fPIC) -fno-rtti
+JCXXFLAGS = -pipe -fPIC -fno-rtti
 DEBUGFLAGS = -O0 -g -DJL_DEBUG_BUILD -fstack-protector-all
 SHIPFLAGS = -O3 -g -falign-functions
 endif
@@ -205,13 +137,13 @@ ifeq ($(LLVM_VER),svn)
 JCXXFLAGS += -std=c++11
 endif
 
-JFFLAGS = -O2 $(fPIC)
+JFFLAGS = -O2 -fPIC
 JF2CFLAGS = -ff2c -fno-second-underscore
 ifneq ($(USEMSVC),1)
 CPP = $(CC) -E
-AR := $(CROSS_COMPILE)ar
-AS := $(CROSS_COMPILE)as
-LD := $(CROSS_COMPILE)ld
+AR := ar
+AS := as
+LD := ld
 else #USEMSVC
 CPP = $(CC) -EP
 AR := lib
@@ -222,7 +154,7 @@ AS := ml
 endif #ARCH
 LD := link
 endif #USEMSVC
-RANLIB := $(CROSS_COMPILE)ranlib
+RANLIB := ranlib
 
 
 # if not absolute, then relative to the directory of the julia executable
