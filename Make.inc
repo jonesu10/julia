@@ -31,19 +31,19 @@ endif
 STDLIBCPP_FLAG =
 
 ifeq ($(USEGCC),1)
-JCFLAGS = -std=gnu99 -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64
-JCPPFLAGS =
-JCXXFLAGS = -pipe -fPIC -fno-rtti
-DEBUGFLAGS = -O0 -ggdb3 -DJL_DEBUG_BUILD -fstack-protector-all
-SHIPFLAGS = -O3 -ggdb3 -falign-functions
+JCFLAGS += -std=gnu99 -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64
+JCPPFLAGS +=
+JCXXFLAGS += -pipe -fPIC -fno-rtti
+DEBUGFLAGS += -O0 -ggdb3 -DJL_DEBUG_BUILD -fstack-protector-all
+SHIPFLAGS += -O3 -ggdb3 -falign-functions
 endif
 
 ifeq ($(USECLANG),1)
-JCFLAGS = -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64
-JCPPFLAGS =
-JCXXFLAGS = -pipe -fPIC -fno-rtti
-DEBUGFLAGS = -O0 -g -DJL_DEBUG_BUILD -fstack-protector-all
-SHIPFLAGS = -O3 -g
+JCFLAGS += -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64
+JCPPFLAGS +=
+JCXXFLAGS += -pipe -fPIC -fno-rtti
+DEBUGFLAGS += -O0 -g -DJL_DEBUG_BUILD -fstack-protector-all
+SHIPFLAGS += -O3 -g
 ifeq ($(OS), Darwin)
 ifeq ($(USE_LIBCPP), 1)
 CC += -stdlib=libc++ -mmacosx-version-min=10.7
@@ -58,11 +58,11 @@ endif
 endif
 
 ifeq ($(USEICC),1)
-JCFLAGS = -std=gnu99 -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64 -fp-model precise -fp-model except -no-ftz
-JCPPFLAGS =
-JCXXFLAGS = -pipe -fPIC -fno-rtti
-DEBUGFLAGS = -O0 -g -DJL_DEBUG_BUILD -fstack-protector-all
-SHIPFLAGS = -O3 -g -falign-functions
+JCFLAGS += -std=gnu99 -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64 -fp-model precise -fp-model except -no-ftz
+JCPPFLAGS +=
+JCXXFLAGS += -pipe -fPIC -fno-rtti
+DEBUGFLAGS += -O0 -g -DJL_DEBUG_BUILD -fstack-protector-all
+SHIPFLAGS += -O3 -g -falign-functions
 endif
 
 CC_BASE = $(shell echo $(CC) | cut -d' ' -f1)
@@ -97,10 +97,6 @@ ifeq ($(OS),WINNT)
 build_shlibdir = $(build_bindir)
 else
 build_shlibdir = $(build_libdir)
-endif
-
-ifeq (exists, $(shell [ -e $(JULIAHOME)/Make.user ] && echo exists ))
-include $(JULIAHOME)/Make.user
 endif
 
 ifeq ($(SANITIZE),1)
