@@ -38,3 +38,5 @@ endif()
 
 jl_set_make_flag(CC "${CMAKE_C_COMPILER}")
 jl_set_make_flag(CXX "${CMAKE_CXX_COMPILER}")
+string(SUBSTRING "${CMAKE_SHARED_LIBRARY_SUFFIX}" 1 -1 SHLIB)
+jl_set_make_flag(SHLIB_EXT "${SHLIB}")

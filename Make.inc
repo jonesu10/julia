@@ -395,18 +395,6 @@ else
   RPATH_ORIGIN = -Wl,-rpath,'$$ORIGIN' -Wl,-z,origin
 endif
 
-# file extensions
-ifeq ($(OS), WINNT)
-  SHLIB_EXT = dll
-  SHELL_EXT = bat
-else ifeq ($(OS), Darwin)
-  SHLIB_EXT = dylib
-  SHELL_EXT = sh
-else
-  SHLIB_EXT = so
-  SHELL_EXT = sh
-endif
-
 # --whole-archive
 ifeq ($(OS), Darwin)
   WHOLE_ARCHIVE = -Xlinker -all_load
