@@ -31,8 +31,6 @@ endif
 STDLIBCPP_FLAG =
 
 ifeq ($(USEGCC),1)
-CC = gcc
-CXX = g++
 JCFLAGS = -std=gnu99 -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64
 JCPPFLAGS =
 JCXXFLAGS = -pipe -fPIC -fno-rtti
@@ -41,8 +39,6 @@ SHIPFLAGS = -O3 -ggdb3 -falign-functions
 endif
 
 ifeq ($(USECLANG),1)
-CC = clang
-CXX = clang++
 JCFLAGS = -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64
 JCPPFLAGS =
 JCXXFLAGS = -pipe -fPIC -fno-rtti
@@ -62,8 +58,6 @@ endif
 endif
 
 ifeq ($(USEICC),1)
-CC  = icc
-CXX = icpc
 JCFLAGS = -std=gnu99 -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64 -fp-model precise -fp-model except -no-ftz
 JCPPFLAGS =
 JCXXFLAGS = -pipe -fPIC -fno-rtti

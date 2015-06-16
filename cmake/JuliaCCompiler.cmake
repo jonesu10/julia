@@ -35,3 +35,6 @@ if(NOT USECLANG)
       "Address Sanitizer only supported with clang. Try setting SANITIZE=0")
   endif()
 endif()
+
+jl_set_make_flag(CC "${CMAKE_C_COMPILER}")
+jl_set_make_flag(CXX "${CMAKE_CXX_COMPILER}")
