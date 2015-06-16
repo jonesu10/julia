@@ -24,3 +24,14 @@ else()
   # TODO
   message(FATAL_ERROR "Unsupported compiler ${CMAKE_C_COMPILER_ID}")
 endif()
+
+if(NOT USECLANG)
+  if(USE_LIBCPP)
+    message(FATAL_ERROR
+      "USE_LIBCPP only supported with clang. Try setting USE_LIBCPP=0")
+  endif()
+  if(SANITIZE)
+    message(FATAL_ERROR
+      "Address Sanitizer only supported with clang. Try setting SANITIZE=0")
+  endif()
+endif()

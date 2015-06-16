@@ -30,34 +30,7 @@ endif
 
 STDLIBCPP_FLAG =
 
-ifeq ($(OS), Darwin)
-DARWINVER := $(shell uname -r | cut -b 1-2)
-DARWINVER_GTE13 := $(shell expr `uname -r | cut -b 1-2` \>= 13)
-ifeq ($(DARWINVER), 10) # Snow Leopard specific configuration
-USEGCC = 1
-USECLANG = 0
-OPENBLAS_TARGET_ARCH=NEHALEM
-OPENBLAS_DYNAMIC_ARCH=0
-USE_SYSTEM_LIBUNWIND=1
-else
-ifeq ($(DARWINVER_GTE13),1)
-USE_LIBCPP = 1
-STDLIBCPP_FLAG = -stdlib=libstdc++
-else
-USE_LIBCPP = 0
-endif
-USEGCC = 0
-USECLANG = 1
-endif
-endif
-
 ifeq ($(USEGCC),1)
-ifeq ($(USE_LIBCPP),1)
-$(error USE_LIBCPP only supported with clang. Try setting USE_LIBCPP=0)
-endif
-ifeq ($(SANITIZE),1)
-$(error Address Sanitizer only supported with clang. Try setting SANITIZE=0)
-endif
 CC = gcc
 CXX = g++
 JCFLAGS = -std=gnu99 -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64
@@ -89,12 +62,6 @@ endif
 endif
 
 ifeq ($(USEICC),1)
-ifeq ($(USE_LIBCPP),1)
-$(error USE_LIBCPP only supported with clang. Try setting USE_LIBCPP=0)
-endif
-ifeq ($(SANITIZE),1)
-$(error Address Sanitizer only supported with clang. Try setting SANITIZE=0)
-endif
 CC  = icc
 CXX = icpc
 JCFLAGS = -std=gnu99 -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64 -fp-model precise -fp-model except -no-ftz
@@ -104,35 +71,12 @@ DEBUGFLAGS = -O0 -g -DJL_DEBUG_BUILD -fstack-protector-all
 SHIPFLAGS = -O3 -g -falign-functions
 endif
 
-ifeq ($(USECCACHE), 1)
-# expand CC and CXX at declaration time because we will redefine them
-CC_ARG   := $(CC)         # Expand CC and CXX here already because we want
-CXX_ARG  := $(CXX)        # the original definition and not the ccache version.
-CC_FULL  := ccache $(CC)  # Expand CC and CXX here already to avoid recursive
-CXX_FULL := ccache $(CXX) # referencing.
-CC        = $(CC_FULL)    # Add an extra indirection to make CC/CXX non-simple
-CXX       = $(CXX_FULL)   # vars (because of how -m$(BINARY) is added later on).
-CC_BASE   = ccache
-CXX_BASE  = ccache
-ifeq ($(USECLANG),1)
-# ccache and Clang don't do well together
-# http://petereisentraut.blogspot.be/2011/05/ccache-and-clang.html
-CC += -Qunused-arguments -fcolor-diagnostics
-CXX += -Qunused-arguments -fcolor-diagnostics
-# http://petereisentraut.blogspot.be/2011/09/ccache-and-clang-part-2.html
-export CCACHE_CPP2 := yes
-endif
-else #USECCACHE
 CC_BASE = $(shell echo $(CC) | cut -d' ' -f1)
 CXX_BASE = $(shell echo $(CXX) | cut -d' ' -f1)
-endif
 
-ifeq ($(LLVM_VER),svn)
 JCXXFLAGS += -std=c++11
-endif
 
 JFFLAGS = -O2 -fPIC
-JF2CFLAGS = -ff2c -fno-second-underscore
 ifneq ($(USEMSVC),1)
 CPP = $(CC) -E
 AR := ar
