@@ -16,6 +16,7 @@ jl_str_option(ARCH "" "")
 jl_set_option(JL_IS_MINGW "${MINGW}")
 jl_set_option(JL_IS_MSYS "${MSYS}")
 
+include(JuliaDirs)
 include(JuliaCCompiler)
 
 # TODO only enable if necessary
@@ -67,7 +68,6 @@ jl_option(LLVM_DEBUG "" Off)
 jl_option(BUILD_LLDB "Build lldb" Off)
 jl_option(BUILD_LLVM_CLANG "Build clang and compiler-rt" ${BUILD_LLDB})
 
-include(JuliaDirs)
 include(JuliaDeps)
 
 ## Settings for various Intel tools
@@ -78,6 +78,10 @@ jl_option(USE_INTEL_JITEVENTS
   "Enable profiling with Intel VTune Amplifier" Off)
 
 jl_set_make_flag(CMAKE "${CMAKE_COMMAND}")
+
+set(JL_SYSTEM_IMAGE_PATH "${build_private_libdir_rel}/sys.ji")
+
+configure_file(src/julia-config.h.in include/julia/julia-config.h @ONLY)
 
 jl_get_make_flags(jl_make_flags)
 

@@ -28,8 +28,6 @@ else
 FC = gfortran
 endif
 
-STDLIBCPP_FLAG =
-
 ifeq ($(USECLANG),1)
 ifeq ($(OS), Darwin)
 ifeq ($(USE_LIBCPP), 1)
@@ -38,10 +36,6 @@ endif
 endif
 endif
 
-CC_BASE = $(shell echo $(CC) | cut -d' ' -f1)
-CXX_BASE = $(shell echo $(CXX) | cut -d' ' -f1)
-
-JFFLAGS = -O2 -fPIC
 ifneq ($(USEMSVC),1)
 CPP = $(CC) -E
 AR := ar
@@ -57,9 +51,6 @@ AS := ml
 endif #ARCH
 LD := link
 endif #USEMSVC
-
-# if not absolute, then relative to the directory of the julia executable
-override JCPPFLAGS += "-DJL_SYSTEM_IMAGE_PATH=\"$(build_private_libdir_rel)/sys.ji\""
 
 # On Windows, we want shared library files to end up in $(build_bindir), instead of $(build_libdir)
 ifeq ($(OS),WINNT)

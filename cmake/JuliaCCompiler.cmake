@@ -65,6 +65,9 @@ else()
   message(FATAL_ERROR "Unsupported compiler ${CMAKE_C_COMPILER_ID}")
 endif()
 
+push_c_flags(CMAKE_C_FLAGS "-I${CMAKE_BINARY_DIR}/include")
+push_c_flags(CMAKE_CXX_FLAGS "-I${CMAKE_BINARY_DIR}/include")
+
 if(NOT USECLANG)
   if(USE_LIBCPP)
     message(FATAL_ERROR

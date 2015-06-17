@@ -67,3 +67,5 @@ set_relative_dir(private_libdir_rel "${bindir}" "${private_libdir}")
 set_relative_dir(datarootdir_rel "${bindir}" "${datarootdir}")
 set_relative_dir(docdir_rel "${bindir}" "${docdir}")
 set_relative_dir(sysconfdir_rel "${bindir}" "${sysconfdir}")
+
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/include/julia")

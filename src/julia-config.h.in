@@ -1,0 +1,3 @@
+//
+
+#define JL_SYSTEM_IMAGE_PATH "@JL_SYSTEM_IMAGE_PATH@"
