@@ -121,12 +121,4 @@ $(BUILDDIR)/libjulia.a: julia.expmap $(OBJS)
 	@$(call PRINT_LINK, ar -rcs $@ $(OBJS))
 libjulia-release: $(build_shlibdir)/libjulia.$(SHLIB_EXT)
 
-clean:
-	-rm -f $(build_shlibdir)/libjulia*
-	-rm -f $(BUILDDIR)/julia_flisp.boot $(BUILDDIR)/julia_flisp.boot.inc
-	-rm -f $(BUILDDIR)/*.dbg.obj $(BUILDDIR)/*.o *~ $(BUILDDIR)/*.$(SHLIB_EXT) $(BUILDDIR)/*.a *#
-	-rm -f $(BUILDDIR)/julia_version.h
-
-cleanall: clean
-
-.PHONY: debug release clean cleanall clean-*
+.PHONY: debug release
