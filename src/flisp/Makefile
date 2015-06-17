@@ -31,7 +31,7 @@ LIBS += -lpthread
 endif
 
 FLAGS = -I$(LLTDIR) $(CFLAGS) \
-        -I$(LIBUV_INC) -I$(build_includedir) $(LIBDIRS:%=-L%) \
+        -I$(LIBUV_INC) -I$(build_includedir) \
         -DLIBRARY_EXPORTS -DUTF8PROC_EXPORTS
 ifneq ($(USEMSVC), 1)
 FLAGS += -Wall -Wno-strict-aliasing -DUSE_COMPUTED_GOTO -fvisibility=hidden
