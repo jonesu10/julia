@@ -48,6 +48,13 @@ set_build_dir(mandir "${build_prefix}/man")
 set_build_dir(man1dir "${build_mandir}/man1")
 set_build_dir(includedir "${build_prefix}/include")
 set_build_dir(sysconfdir "${build_prefix}/etc")
+# On Windows, we want shared library files to end up in ${build_bindir},
+# instead of ${build_libdir}
+if(WIN32)
+  set_build_dir(shlibdir "${build_bindir}")
+else()
+  set_build_dir(shlibdir "${build_libdir}")
+endif()
 
 file(MAKE_DIRECTORY "${build_sysconfdir}/julia")
 file(MAKE_DIRECTORY "${build_datarootdir}/julia/base")

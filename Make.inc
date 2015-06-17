@@ -52,13 +52,6 @@ endif #ARCH
 LD := link
 endif #USEMSVC
 
-# On Windows, we want shared library files to end up in $(build_bindir), instead of $(build_libdir)
-ifeq ($(OS),WINNT)
-build_shlibdir = $(build_bindir)
-else
-build_shlibdir = $(build_libdir)
-endif
-
 ifeq ($(SANITIZE),1)
 ifeq ($(SANITIZE_MEMORY),1)
 SANITIZE_OPTS = -fsanitize=memory -fsanitize-memory-track-origins -fno-omit-frame-pointer
@@ -70,14 +63,6 @@ override JCFLAGS += $(SANITIZE_OPTS)
 LDFLAGS += $(SANITIZE_OPTS)
 override DEPS_CFLAGS += $(SANITIZE_OPTS)
 override DEPS_CXXFLAGS += $(SANITIZE_OPTS)
-endif
-
-TAR=`which gtar 2>/dev/null || which tar 2>/dev/null`
-TAR_TEST := $(shell $(TAR) --help 2>&1  | egrep 'bsdtar|strip-components')
-ifeq (,$(findstring components,$(TAR_TEST)))
-ifneq (bsdtar,$(findstring bsdtar,$(TAR_TEST)))
-$(error "please install either GNU tar or bsdtar")
-endif
 endif
 
 # ===========================================================================

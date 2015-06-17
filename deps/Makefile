@@ -5,6 +5,7 @@ INSTALL_F = $(JULIAHOME)/contrib/install.sh 644
 INSTALL_M = $(JULIAHOME)/contrib/install.sh 755
 JLDOWNLOAD = $(JULIAHOME)/deps/jldownload
 JLCHECKSUM = $(JULIAHOME)/deps/jlchecksum
+TAR=`which gtar 2>/dev/null || which tar 2>/dev/null`
 RANLIB := ranlib
 JFFLAGS = -O2 -fPIC
 
