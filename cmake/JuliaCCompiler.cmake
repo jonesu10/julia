@@ -16,6 +16,16 @@ if(CMAKE_C_COMPILER_ID STREQUAL "AppleClang" OR
   jl_set_option(USECLANG On)
 elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU")
   jl_set_option(USEGCC On)
+  push_c_flags(CMAKE_C_FLAGS -std=gnu99 -pipe -fPIC -fno-strict-aliasing
+    -D_FILE_OFFSET_BITS=64)
+  push_c_flags(CMAKE_CXX_FLAGS -pipe -fPIC -fno-rtti)
+  push_c_flags(JL_CPP_FLAGS)
+  push_c_flags(CMAKE_C_FLAGS_DEBUG -O0 -ggdb3 -DJL_DEBUG_BUILD
+    -fstack-protector-all)
+  push_c_flags(CMAKE_CXX_FLAGS_DEBUG -O0 -ggdb3 -DJL_DEBUG_BUILD
+    -fstack-protector-all)
+  push_c_flags(CMAKE_C_FLAGS_RELEASE -O3 -ggdb3 -falign-functions)
+  push_c_flags(CMAKE_CXX_FLAGS_RELEASE -O3 -ggdb3 -falign-functions)
 elseif(CMAKE_C_COMPILER_ID STREQUAL "Intel")
   jl_set_option(USEICC On)
 elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
@@ -40,6 +50,8 @@ jl_set_make_flag(CC "${CMAKE_C_COMPILER}")
 jl_set_make_flag(CXX "${CMAKE_CXX_COMPILER}")
 string(SUBSTRING "${CMAKE_SHARED_LIBRARY_SUFFIX}" 1 -1 SHLIB)
 jl_set_make_flag(SHLIB_EXT "${SHLIB}")
+
+message("${CMAKE_C_FLAGS}")
 
 jl_set_make_flag(JCFLAGS "${CMAKE_C_FLAGS}")
 jl_set_make_flag(JCXXFLAGS "${CMAKE_CXX_FLAGS}")

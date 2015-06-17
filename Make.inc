@@ -30,14 +30,6 @@ endif
 
 STDLIBCPP_FLAG =
 
-ifeq ($(USEGCC),1)
-override JCFLAGS += -std=gnu99 -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64
-override JCPPFLAGS +=
-override JCXXFLAGS += -pipe -fPIC -fno-rtti
-override DEBUGFLAGS += -O0 -ggdb3 -DJL_DEBUG_BUILD -fstack-protector-all
-override SHIPFLAGS += -O3 -ggdb3 -falign-functions
-endif
-
 ifeq ($(USECLANG),1)
 override JCFLAGS += -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64
 override JCPPFLAGS +=

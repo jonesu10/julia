@@ -47,3 +47,11 @@ function(use_system_opt lib)
   jl_option("USE_SYSTEM_${lib}"
     "Use ${lib} available on the system instead of building it" Off)
 endfunction()
+
+function(push_c_flags var)
+  set(res "${${var}}")
+  foreach(i RANGE 1 ${ARGC})
+    set(res "${res} ${ARGV${i}}")
+  endforeach()
+  set(${var} "${res}" PARENT_SCOPE)
+endfunction()
