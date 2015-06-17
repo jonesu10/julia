@@ -21,8 +21,8 @@ HEADERS = $(wildcard *.h) $(LIBUV_INC)/uv.h
 OBJS = $(SRCS:%.c=$(BUILDDIR)/%.o)
 DOBJS = $(SRCS:%.c=$(BUILDDIR)/%.dbg.obj)
 LLTDIR = ../support
-LLT_release = $(BUILDDIR)/$(LLTDIR)/libsupport.a
-LLT_debug = $(BUILDDIR)/$(LLTDIR)/libsupport-debug.a
+LLT_release = $(CMAKE_BINARY_DIR)/src/support/libsupport.a
+LLT_debug = $(CMAKE_BINARY_DIR)/src/support/libsupport.a
 LIBFILES_release = $(LLT_release) $(LIBUV) $(LIBUTF8PROC)
 LIBFILES_debug = $(LLT_debug) $(LIBUV) $(LIBUTF8PROC)
 LIBS =
@@ -30,7 +30,7 @@ ifneq ($(OS),WINNT)
 LIBS += -lpthread
 endif
 
-FLAGS = -I$(LLTDIR) $(CFLAGS) $(HFILEDIRS:%=-I%) \
+FLAGS = -I$(LLTDIR) $(CFLAGS) \
         -I$(LIBUV_INC) -I$(build_includedir) $(LIBDIRS:%=-L%) \
         -DLIBRARY_EXPORTS -DUTF8PROC_EXPORTS
 ifneq ($(USEMSVC), 1)

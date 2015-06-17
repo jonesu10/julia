@@ -76,3 +76,5 @@ set_relative_dir(docdir_rel "${bindir}" "${docdir}")
 set_relative_dir(sysconfdir_rel "${bindir}" "${sysconfdir}")
 
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/include/julia")
+
+jl_set_make_flag(CMAKE_BINARY_DIR "${CMAKE_BINARY_DIR}")

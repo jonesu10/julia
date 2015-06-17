@@ -30,8 +30,8 @@ override FLAGS += -DLLVM_SHLIB
 endif
 
 COMMON_LIBS = -L$(build_shlibdir) -L$(build_libdir) $(LIBUV) $(LIBUTF8PROC) $(NO_WHOLE_ARCHIVE) $(LLVMLINK) $(OSLIBS)
-DEBUG_LIBS = $(WHOLE_ARCHIVE) $(BUILDDIR)/flisp/libflisp-debug.a $(WHOLE_ARCHIVE) $(BUILDDIR)/support/libsupport-debug.a $(COMMON_LIBS)
-RELEASE_LIBS = $(WHOLE_ARCHIVE) $(BUILDDIR)/flisp/libflisp.a $(WHOLE_ARCHIVE) $(BUILDDIR)/support/libsupport.a $(COMMON_LIBS)
+DEBUG_LIBS = $(WHOLE_ARCHIVE) $(BUILDDIR)/flisp/libflisp-debug.a $(WHOLE_ARCHIVE) $(CMAKE_BINARY_DIR)/src/support/libsupport.a $(COMMON_LIBS)
+RELEASE_LIBS = $(WHOLE_ARCHIVE) $(BUILDDIR)/flisp/libflisp.a $(WHOLE_ARCHIVE) $(CMAKE_BINARY_DIR)/src/support/libsupport.a $(COMMON_LIBS)
 
 OBJS = $(SRCS:%=$(BUILDDIR)/%.o)
 DOBJS = $(SRCS:%=$(BUILDDIR)/%.dbg.obj)
@@ -81,18 +81,12 @@ $(BUILDDIR)/ast.o $(BUILDDIR)/ast.dbg.obj: $(BUILDDIR)/julia_flisp.boot.inc flis
 $(BUILDDIR)/codegen.o $(BUILDDIR)/codegen.dbg.obj: intrinsics.cpp cgutils.cpp ccall.cpp abi_*.cpp
 $(BUILDDIR)/builtins.o $(BUILDDIR)/builtins.dbg.obj: table.c
 
-$(BUILDDIR)/support/libsupport.a: support/*.h support/*.c
-	$(MAKE) -C support BUILDDIR='$(abspath $(BUILDDIR)/support)'
-
-$(BUILDDIR)/support/libsupport-debug.a: support/*.h support/*.c
-	$(MAKE) -C support debug BUILDDIR='$(abspath $(BUILDDIR)/support)'
-
 $(FLISP_EXECUTABLE_release): $(BUILDDIR)/flisp/libflisp.a
-$(BUILDDIR)/flisp/libflisp.a: flisp/*.h flisp/*.c $(BUILDDIR)/support/libsupport.a
+$(BUILDDIR)/flisp/libflisp.a: flisp/*.h flisp/*.c
 	$(MAKE) -C flisp BUILDDIR='$(abspath $(BUILDDIR)/flisp)'
 
 $(FLISP_EXECUTABLE_debug): $(BUILDDIR)/flisp/libflisp-debug.a
-$(BUILDDIR)/flisp/libflisp-debug.a: flisp/*.h flisp/*.c $(BUILDDIR)/support/libsupport-debug.a
+$(BUILDDIR)/flisp/libflisp-debug.a: flisp/*.h flisp/*.c
 	$(MAKE) -C flisp debug BUILDDIR='$(abspath $(BUILDDIR)/flisp)'
 
 julia_version.h: ../VERSION
@@ -117,11 +111,11 @@ else
 CXXLD = $(LD) -dll -export:jl_setjmp -export:jl_longjmp
 endif
 
-$(build_shlibdir)/libjulia-debug.$(SHLIB_EXT): julia.expmap $(DOBJS) $(BUILDDIR)/flisp/libflisp-debug.a $(BUILDDIR)/support/libsupport-debug.a $(LIBUV)
+$(build_shlibdir)/libjulia-debug.$(SHLIB_EXT): julia.expmap $(DOBJS) $(BUILDDIR)/flisp/libflisp-debug.a
 	@$(call PRINT_LINK, $(CXXLD) $(CXXFLAGS) $(CXXLDFLAGS) $(DEBUGFLAGS) $(DOBJS) $(RPATH_ORIGIN) -o $@ $(LDFLAGS) $(JLIBLDFLAGS) $(DEBUG_LIBS))
 	$(INSTALL_NAME_CMD)libjulia-debug.$(SHLIB_EXT) $@
 	$(DSYMUTIL) $@
-$(BUILDDIR)/libjulia-debug.a: julia.expmap $(DOBJS) $(BUILDDIR)/flisp/libflisp-debug.a $(BUILDDIR)/support/libsupport-debug.a
+$(BUILDDIR)/libjulia-debug.a: julia.expmap $(DOBJS) $(BUILDDIR)/flisp/libflisp-debug.a
 	rm -f $@
 	@$(call PRINT_LINK, ar -rcs $@ $(DOBJS))
 libjulia-debug: $(build_shlibdir)/libjulia-debug.$(SHLIB_EXT)
@@ -132,11 +126,11 @@ else
   SONAME =
 endif
 
-$(build_shlibdir)/libjulia.$(SHLIB_EXT): julia.expmap $(OBJS) $(BUILDDIR)/flisp/libflisp.a $(BUILDDIR)/support/libsupport.a $(LIBUV)
+$(build_shlibdir)/libjulia.$(SHLIB_EXT): julia.expmap $(OBJS) $(BUILDDIR)/flisp/libflisp.a
 	@$(call PRINT_LINK, $(CXXLD) $(CXXFLAGS) $(CXXLDFLAGS) $(SHIPFLAGS) $(OBJS) $(RPATH_ORIGIN) -o $@ $(LDFLAGS) $(JLIBLDFLAGS) $(RELEASE_LIBS) $(SONAME)) $(CXXLDFLAGS)
 	$(INSTALL_NAME_CMD)libjulia.$(SHLIB_EXT) $@
 	$(DSYMUTIL) $@
-$(BUILDDIR)/libjulia.a: julia.expmap $(OBJS) $(BUILDDIR)/flisp/libflisp.a $(BUILDDIR)/support/libsupport.a
+$(BUILDDIR)/libjulia.a: julia.expmap $(OBJS) $(BUILDDIR)/flisp/libflisp.a
 	rm -f $@
 	@$(call PRINT_LINK, ar -rcs $@ $(OBJS))
 libjulia-release: $(build_shlibdir)/libjulia.$(SHLIB_EXT)
@@ -150,11 +144,6 @@ clean:
 clean-flisp:
 	-$(MAKE) -C flisp clean BUILDDIR='$(abspath $(BUILDDIR)/flisp)'
 
-clean-support:
-	-$(MAKE) -C support clean BUILDDIR='$(abspath $(BUILDDIR)/support)'
-
-
-cleanall: clean clean-flisp clean-support
+cleanall: clean clean-flisp
 
 .PHONY: debug release clean cleanall clean-*
-

@@ -158,6 +158,6 @@ add_subdirectory(contrib)
 add_subdirectory(src)
 
 add_custom_target(julia ALL
-  DEPENDS julia-deps libccalltest stringreplace
+  DEPENDS julia-deps libccalltest stringreplace support
   COMMAND make ${jl_make_flags}
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
