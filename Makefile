@@ -3,13 +3,7 @@ include $(JULIAHOME)/Make.inc
 default: $(JULIA_BUILD_MODE) # contains either "debug" or "release"
 all: debug release
 
-# sort is used to remove potential duplicates
-
 $(foreach link,base test,$(eval $(call symlink_target,$(link),$(build_datarootdir)/julia)))
-
-# Build the HTML docs (skipped if already exists, notably in tarballs)
-doc/_build/html:
-	@$(MAKE) -C doc html
 
 # doc needs to live under $(build_docdir), not under $(build_datarootdir)/julia/
 $(subst $(abspath $(JULIAHOME))/,,$(abspath $(build_docdir))): $(build_docdir)

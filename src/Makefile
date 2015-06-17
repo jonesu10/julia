@@ -29,9 +29,7 @@ LLVMLINK = $(call exec,$(LLVM_CONFIG) --ldflags) -lLLVM-$(call exec,$(LLVM_CONFI
 override FLAGS += -DLLVM_SHLIB
 endif
 
-COMMON_LIBS = -L$(build_shlibdir) -L$(build_libdir) $(LIBUV) $(LIBUTF8PROC) $(NO_WHOLE_ARCHIVE) $(LLVMLINK) $(OSLIBS)
-DEBUG_LIBS = $(WHOLE_ARCHIVE) $(CMAKE_BINARY_DIR)/src/flisp/libflisp.a $(WHOLE_ARCHIVE) $(CMAKE_BINARY_DIR)/src/support/libsupport.a $(COMMON_LIBS)
-RELEASE_LIBS = $(WHOLE_ARCHIVE) $(CMAKE_BINARY_DIR)/src/flisp/libflisp.a $(WHOLE_ARCHIVE) $(CMAKE_BINARY_DIR)/src/support/libsupport.a $(COMMON_LIBS)
+COMMON_LIBS = $(WHOLE_ARCHIVE) $(CMAKE_BINARY_DIR)/src/flisp/libflisp.a $(CMAKE_BINARY_DIR)/src/support/libsupport.a -L$(build_shlibdir) -L$(build_libdir) $(LIBUV) $(LIBUTF8PROC) $(NO_WHOLE_ARCHIVE) $(LLVMLINK) $(OSLIBS)
 
 OBJS = $(SRCS:%=$(BUILDDIR)/%.o)
 DOBJS = $(SRCS:%=$(BUILDDIR)/%.dbg.obj)
@@ -75,7 +73,7 @@ CXXLD = $(LD) -dll -export:jl_setjmp -export:jl_longjmp
 endif
 
 $(build_shlibdir)/libjulia-debug.$(SHLIB_EXT): julia.expmap $(DOBJS)
-	@$(call PRINT_LINK, $(CXXLD) $(CXXFLAGS) $(CXXLDFLAGS) $(DEBUGFLAGS) $(DOBJS) $(RPATH_ORIGIN) -o $@ $(LDFLAGS) $(JLIBLDFLAGS) $(DEBUG_LIBS))
+	@$(call PRINT_LINK, $(CXXLD) $(CXXFLAGS) $(CXXLDFLAGS) $(DEBUGFLAGS) $(DOBJS) $(RPATH_ORIGIN) -o $@ $(LDFLAGS) $(JLIBLDFLAGS) $(COMMON_LIBS))
 	$(INSTALL_NAME_CMD)libjulia-debug.$(SHLIB_EXT) $@
 	$(DSYMUTIL) $@
 $(BUILDDIR)/libjulia-debug.a: julia.expmap $(DOBJS)
@@ -90,7 +88,7 @@ else
 endif
 
 $(build_shlibdir)/libjulia.$(SHLIB_EXT): julia.expmap $(OBJS)
-	@$(call PRINT_LINK, $(CXXLD) $(CXXFLAGS) $(CXXLDFLAGS) $(SHIPFLAGS) $(OBJS) $(RPATH_ORIGIN) -o $@ $(LDFLAGS) $(JLIBLDFLAGS) $(RELEASE_LIBS) $(SONAME)) $(CXXLDFLAGS)
+	@$(call PRINT_LINK, $(CXXLD) $(CXXFLAGS) $(CXXLDFLAGS) $(SHIPFLAGS) $(OBJS) $(RPATH_ORIGIN) -o $@ $(LDFLAGS) $(JLIBLDFLAGS) $(COMMON_LIBS) $(SONAME)) $(CXXLDFLAGS)
 	$(INSTALL_NAME_CMD)libjulia.$(SHLIB_EXT) $@
 	$(DSYMUTIL) $@
 $(BUILDDIR)/libjulia.a: julia.expmap $(OBJS)

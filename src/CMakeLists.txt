@@ -35,3 +35,28 @@ add_custom_command(OUTPUT "${julia_flisp_boot_inc}"
 
 add_custom_target(julia_flisp_boot_inc
   DEPENDS "${julia_flisp_boot_inc}" julia_flisp_boot)
+
+set(libjulia_SRCS
+  jltypes.c
+  gf.c
+  ast.c
+  builtins.c
+  module.c
+  codegen.cpp
+  disasm.cpp
+  debuginfo.cpp
+  interpreter.c
+  alloc.c
+  dlload.c
+  sys.c
+  init.c
+  task.c
+  array.c
+  dump.c
+  toplevel.c
+  jl_uv.c
+  jlapi.c
+  profile.c
+  llvm-simdloop.cpp
+  simplevector.c
+  gc.c)

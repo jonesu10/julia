@@ -156,6 +156,7 @@ add_subdirectory(deps)
 add_subdirectory(test)
 add_subdirectory(contrib)
 add_subdirectory(src)
+add_subdirectory(doc)
 
 add_custom_target(julia ALL
   DEPENDS julia-deps libccalltest stringreplace flmain julia_flisp_boot_inc
