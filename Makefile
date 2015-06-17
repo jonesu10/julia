@@ -22,10 +22,7 @@ endif
 julia-base:
 	@$(MAKE) $(QUIET_MAKE) -C base
 
-julia-src-release julia-src-debug : julia-src-% :
-	@$(MAKE) $(QUIET_MAKE) -C src libjulia-$*
-
-julia-ui-release julia-ui-debug : julia-ui-% : julia-src-%
+julia-ui-release julia-ui-debug : julia-ui-% :
 	@$(MAKE) $(QUIET_MAKE) -C ui julia-$*
 
 julia-sysimg : julia-base julia-ui-$(JULIA_BUILD_MODE)
@@ -105,6 +102,6 @@ $(build_private_libdir)/sys.o: VERSION $(BASE_SRCS) $(build_docdir)/helpdb.jl $(
 
 .PHONY: default debug release check-whitespace release-candidate \
 	julia-debug julia-release \
-	julia-ui-release julia-ui-debug julia-src-release julia-src-debug \
+	julia-ui-release julia-ui-debug \
 	julia-symlink julia-base julia-sysimg \
 	test testall testall1 test

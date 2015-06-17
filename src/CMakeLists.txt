@@ -60,3 +60,8 @@ set(libjulia_SRCS
   llvm-simdloop.cpp
   simplevector.c
   gc.c)
+
+add_custom_target(libjulia
+  DEPENDS julia-deps flmain julia_flisp_boot_inc
+  COMMAND make libjulia-release ${jl_make_flags}
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
