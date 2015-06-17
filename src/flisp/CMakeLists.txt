@@ -34,3 +34,18 @@ endif()
 
 target_link_libraries(flisp ${LIBUV} ${UTF8PROC} support dl)
 target_link_libraries(flmain flisp)
+
+# TODO? generate at compile time?
+add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/flisp.boot"
+  COMMAND "${CMAKE_COMMAND}" -E copy
+  "${CMAKE_CURRENT_SOURCE_DIR}/flisp.boot"
+  "${CMAKE_CURRENT_BINARY_DIR}/flisp.boot"
+  DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/flisp.boot")
+
+add_custom_target(flisp-boot
+  DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/flisp.boot")
+
+set_target_properties(flmain PROPERTIES
+  OUTPUT_NAME flisp)
+
+add_dependencies(flmain flisp-boot)
