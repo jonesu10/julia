@@ -83,10 +83,6 @@ set(JL_SYSTEM_IMAGE_PATH "${build_private_libdir_rel}/sys.ji")
 
 configure_file(src/julia-config.h.in include/julia/julia-config.h @ONLY)
 
-jl_get_make_flags(jl_make_flags)
-
-# message("${jl_make_flags}")
-
 # This is the trick in cmake to have proper dependency on a file
 # For another command that depend on the output of this which needs to be
 # updated automatically. The (custom) command should depend on the file output
@@ -129,9 +125,37 @@ add_custom_command(OUTPUT "${build_man1dir}/julia.1"
 add_custom_target(julia-man1
   DEPENDS "${build_man1dir}/julia.1")
 
+# TODO
+if(USE_SYSTEM_LIBUV)
+  set(LIBUV /usr/lib/libuv-julia.a)
+  set(LIBUV_INC /usr/include)
+else()
+  set(LIBUV "${build_libdir}/libuv.a")
+  set(LIBUV_INC "${build_includedir}")
+endif()
+
+jl_set_make_flag(LIBUV "${LIBUV}")
+jl_set_make_flag(LIBUV_INC "${LIBUV_INC}")
+
+if(USE_SYSTEM_UTF8PROC)
+  set(LIBUTF8PROC -lutf8proc)
+  set(UTF8PROC_INC /usr/include)
+else()
+  set(LIBUTF8PROC "${build_libdir}/libutf8proc.a")
+  set(UTF8PROC_INC "${build_includedir}")
+endif()
+
+jl_set_make_flag(LIBUTF8PROC "${LIBUTF8PROC}")
+jl_set_make_flag(UTF8PROC_INC "${UTF8PROC_INC}")
+
+jl_get_make_flags(jl_make_flags)
+
+# message("${jl_make_flags}")
+
 add_subdirectory(deps)
 add_subdirectory(test)
 add_subdirectory(contrib)
+add_subdirectory(src)
 
 add_custom_target(julia ALL
   DEPENDS julia-deps libccalltest stringreplace

@@ -288,22 +288,6 @@ LIBM = -lopenlibm
 LIBMNAME = libopenlibm
 endif
 
-ifeq ($(USE_SYSTEM_LIBUV), 1)
-  LIBUV = /usr/lib/libuv-julia.a
-  LIBUV_INC = /usr/include
-else
-  LIBUV = $(build_libdir)/libuv.a
-  LIBUV_INC = $(build_includedir)
-endif
-
-ifeq ($(USE_SYSTEM_UTF8PROC), 1)
-  LIBUTF8PROC = -lutf8proc
-  UTF8PROC_INC = /usr/include
-else
-  LIBUTF8PROC = $(build_libdir)/libutf8proc.a
-  UTF8PROC_INC = $(build_includedir)
-endif
-
 # OS specific stuff
 
 # install_name_tool
