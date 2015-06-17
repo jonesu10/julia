@@ -1587,9 +1587,6 @@ extern DLLEXPORT jl_options_t jl_options;
 #define JL_OPTIONS_HANDLE_SIGNALS_ON 1
 #define JL_OPTIONS_HANDLE_SIGNALS_OFF 0
 
-// Version information
-#include "julia_version.h"
-
 DLLEXPORT extern int jl_ver_major(void);
 DLLEXPORT extern int jl_ver_minor(void);
 DLLEXPORT extern int jl_ver_patch(void);
