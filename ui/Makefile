@@ -17,8 +17,8 @@ endif
 
 OBJS = $(SRCS:%=%.o)
 DOBJS = $(SRCS:%=%.dbg.obj)
-DEBUGFLAGS += $(FLAGS)
-SHIPFLAGS += $(FLAGS)
+override DEBUGFLAGS += $(FLAGS)
+override SHIPFLAGS += $(FLAGS)
 ifeq ($(USE_LLVM_SHLIB),1)
 LLVMLINK = $(call exec,$(LLVM_CONFIG) --ldflags) -lLLVM-$(call exec,$(LLVM_CONFIG) --version)
 else
@@ -77,4 +77,3 @@ clean: | $(CLEAN_TARGETS)
 	rm -f $(build_bindir)/julia*
 
 .PHONY: clean release debug julia-release julia-debug
-

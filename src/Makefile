@@ -19,7 +19,7 @@ FLAGS = \
 	-I$(LIBUV_INC) -I$(build_includedir) -DLIBRARY_EXPORTS \
 	-I$(BUILDDIR) -I$(JULIAHOME)/deps/valgrind
 ifneq ($(USEMSVC), 1)
-FLAGS += -Wall -Wno-strict-aliasing -fno-omit-frame-pointer -fvisibility=hidden -fno-common
+override FLAGS += -Wall -Wno-strict-aliasing -fno-omit-frame-pointer -fvisibility=hidden -fno-common
 endif
 
 # In LLVM < 3.4, --ldflags includes both options and libraries, so use it both before and after --libs
@@ -27,7 +27,7 @@ endif
 LLVMLINK = $(call exec,$(LLVM_CONFIG) --ldflags) $(call exec,$(LLVM_CONFIG) --libs) $(call exec,$(LLVM_CONFIG) --ldflags) $(call exec,$(LLVM_CONFIG) --system-libs 2> /dev/null)
 ifeq ($(USE_LLVM_SHLIB),1)
 LLVMLINK = $(call exec,$(LLVM_CONFIG) --ldflags) -lLLVM-$(call exec,$(LLVM_CONFIG) --version)
-FLAGS += -DLLVM_SHLIB
+override FLAGS += -DLLVM_SHLIB
 endif
 
 COMMON_LIBS = -L$(build_shlibdir) -L$(build_libdir) $(LIBUV) $(LIBUTF8PROC) $(NO_WHOLE_ARCHIVE) $(LLVMLINK) $(OSLIBS)
@@ -36,13 +36,13 @@ RELEASE_LIBS = $(WHOLE_ARCHIVE) $(BUILDDIR)/flisp/libflisp.a $(WHOLE_ARCHIVE) $(
 
 OBJS = $(SRCS:%=$(BUILDDIR)/%.o)
 DOBJS = $(SRCS:%=$(BUILDDIR)/%.dbg.obj)
-DEBUGFLAGS += $(FLAGS)
-SHIPFLAGS += $(FLAGS)
+override DEBUGFLAGS += $(FLAGS)
+override SHIPFLAGS += $(FLAGS)
 
 SRCS += gc
 
 ifeq ($(USE_COPY_STACKS),1)
-JCFLAGS += -DCOPY_STACKS
+override JCFLAGS += -DCOPY_STACKS
 endif
 
 FLISP_EXECUTABLE_debug = $(BUILDDIR)/flisp/flisp-debug

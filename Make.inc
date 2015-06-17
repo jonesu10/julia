@@ -31,44 +31,44 @@ endif
 STDLIBCPP_FLAG =
 
 ifeq ($(USEGCC),1)
-JCFLAGS += -std=gnu99 -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64
-JCPPFLAGS +=
-JCXXFLAGS += -pipe -fPIC -fno-rtti
-DEBUGFLAGS += -O0 -ggdb3 -DJL_DEBUG_BUILD -fstack-protector-all
-SHIPFLAGS += -O3 -ggdb3 -falign-functions
+override JCFLAGS += -std=gnu99 -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64
+override JCPPFLAGS +=
+override JCXXFLAGS += -pipe -fPIC -fno-rtti
+override DEBUGFLAGS += -O0 -ggdb3 -DJL_DEBUG_BUILD -fstack-protector-all
+override SHIPFLAGS += -O3 -ggdb3 -falign-functions
 endif
 
 ifeq ($(USECLANG),1)
-JCFLAGS += -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64
-JCPPFLAGS +=
-JCXXFLAGS += -pipe -fPIC -fno-rtti
-DEBUGFLAGS += -O0 -g -DJL_DEBUG_BUILD -fstack-protector-all
-SHIPFLAGS += -O3 -g
+override JCFLAGS += -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64
+override JCPPFLAGS +=
+override JCXXFLAGS += -pipe -fPIC -fno-rtti
+override DEBUGFLAGS += -O0 -g -DJL_DEBUG_BUILD -fstack-protector-all
+override SHIPFLAGS += -O3 -g
 ifeq ($(OS), Darwin)
 ifeq ($(USE_LIBCPP), 1)
-CC += -stdlib=libc++ -mmacosx-version-min=10.7
-CXX += -stdlib=libc++ -mmacosx-version-min=10.7
-FC += -mmacosx-version-min=10.7
+override CC += -stdlib=libc++ -mmacosx-version-min=10.7
+override CXX += -stdlib=libc++ -mmacosx-version-min=10.7
+override FC += -mmacosx-version-min=10.7
 else
-CC += $(STDLIBCPP_FLAG) -mmacosx-version-min=10.6
-CXX += $(STDLIBCPP_FLAG) -mmacosx-version-min=10.6
+override CC += $(STDLIBCPP_FLAG) -mmacosx-version-min=10.6
+override CXX += $(STDLIBCPP_FLAG) -mmacosx-version-min=10.6
 endif
-JCPPFLAGS += -D_LARGEFILE_SOURCE -D_DARWIN_USE_64_BIT_INODE=1
+override JCPPFLAGS += -D_LARGEFILE_SOURCE -D_DARWIN_USE_64_BIT_INODE=1
 endif
 endif
 
 ifeq ($(USEICC),1)
-JCFLAGS += -std=gnu99 -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64 -fp-model precise -fp-model except -no-ftz
-JCPPFLAGS +=
-JCXXFLAGS += -pipe -fPIC -fno-rtti
-DEBUGFLAGS += -O0 -g -DJL_DEBUG_BUILD -fstack-protector-all
-SHIPFLAGS += -O3 -g -falign-functions
+override JCFLAGS += -std=gnu99 -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64 -fp-model precise -fp-model except -no-ftz
+override JCPPFLAGS +=
+override JCXXFLAGS += -pipe -fPIC -fno-rtti
+override DEBUGFLAGS += -O0 -g -DJL_DEBUG_BUILD -fstack-protector-all
+override SHIPFLAGS += -O3 -g -falign-functions
 endif
 
 CC_BASE = $(shell echo $(CC) | cut -d' ' -f1)
 CXX_BASE = $(shell echo $(CXX) | cut -d' ' -f1)
 
-JCXXFLAGS += -std=c++11
+override JCXXFLAGS += -std=c++11
 
 JFFLAGS = -O2 -fPIC
 ifneq ($(USEMSVC),1)
@@ -90,7 +90,7 @@ RANLIB := ranlib
 
 
 # if not absolute, then relative to the directory of the julia executable
-JCPPFLAGS += "-DJL_SYSTEM_IMAGE_PATH=\"$(build_private_libdir_rel)/sys.ji\""
+override JCPPFLAGS += "-DJL_SYSTEM_IMAGE_PATH=\"$(build_private_libdir_rel)/sys.ji\""
 
 # On Windows, we want shared library files to end up in $(build_bindir), instead of $(build_libdir)
 ifeq ($(OS),WINNT)
@@ -105,11 +105,11 @@ SANITIZE_OPTS = -fsanitize=memory -fsanitize-memory-track-origins -fno-omit-fram
 else
 SANITIZE_OPTS = -fsanitize=address -mllvm -asan-stack=0
 endif
-JCXXFLAGS += $(SANITIZE_OPTS)
-JCFLAGS += $(SANITIZE_OPTS)
+override JCXXFLAGS += $(SANITIZE_OPTS)
+override JCFLAGS += $(SANITIZE_OPTS)
 LDFLAGS += $(SANITIZE_OPTS)
-DEPS_CFLAGS += $(SANITIZE_OPTS)
-DEPS_CXXFLAGS += $(SANITIZE_OPTS)
+override DEPS_CFLAGS += $(SANITIZE_OPTS)
+override DEPS_CXXFLAGS += $(SANITIZE_OPTS)
 endif
 
 TAR=`which gtar 2>/dev/null || which tar 2>/dev/null`
@@ -224,7 +224,7 @@ endif
 
 # If we are running on ARM, set certain options automatically
 ifneq (,$(findstring arm,$(ARCH)))
-JCFLAGS += -fsigned-char
+override JCFLAGS += -fsigned-char
 
 LLVM_ASSERTIONS=1
 #LLVM_FLAGS+="--with-float=hard --with-abi=aapcs-vfp"
@@ -249,7 +249,7 @@ endif
 
 ifeq ($(USEGCC),1)
 ifeq ($(ISX86),1)
-  SHIPFLAGS += -momit-leaf-frame-pointer
+  override SHIPFLAGS += -momit-leaf-frame-pointer
 endif
 endif
 
@@ -263,7 +263,7 @@ endif
 else
 ifeq ($(OS),Darwin)
 LIBUNWIND=$(build_libdir)/libosxunwind.a
-JCPPFLAGS+=-DLIBOSXUNWIND
+override JCPPFLAGS+=-DLIBOSXUNWIND
 else
 LIBUNWIND=$(build_libdir)/libunwind-generic.a $(build_libdir)/libunwind.a
 endif
@@ -272,7 +272,7 @@ endif
 
 ifeq ($(USE_SYSTEM_LLVM), 1)
 LLVM_CONFIG ?= llvm-config$(EXE)
-JCPPFLAGS+=-DSYSTEM_LLVM
+override JCPPFLAGS+=-DSYSTEM_LLVM
 LLVM_VER = $(shell $(LLVM_CONFIG) --version)
 else
 LLVM_CONFIG=$(build_bindir)/llvm-config$(EXE)
@@ -454,7 +454,7 @@ endif
 
 # Intel VTune Amplifier
 ifeq ($(USE_INTEL_JITEVENTS), 1)
-JCPPFLAGS += -DJL_USE_INTEL_JITEVENTS
+override JCPPFLAGS += -DJL_USE_INTEL_JITEVENTS
 endif
 
 # Intel libraries
@@ -495,7 +495,7 @@ LIBFFTWFNAME = libmkl_rt
 endif
 
 ifeq ($(HAVE_SSP),1)
-JCPPFLAGS += -DHAVE_SSP=1
+override JCPPFLAGS += -DHAVE_SSP=1
 ifeq ($(USEGCC),1)
 OSLIBS += -lssp
 endif

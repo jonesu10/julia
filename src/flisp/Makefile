@@ -38,8 +38,8 @@ ifneq ($(USEMSVC), 1)
 FLAGS += -Wall -Wno-strict-aliasing -DUSE_COMPUTED_GOTO -fvisibility=hidden
 endif
 
-DEBUGFLAGS += $(FLAGS)
-SHIPFLAGS += $(FLAGS)
+override DEBUGFLAGS += $(FLAGS)
+override SHIPFLAGS += $(FLAGS)
 
 default: release
 
