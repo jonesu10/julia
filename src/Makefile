@@ -13,7 +13,7 @@ SRCS = \
 HEADERS = julia.h julia_internal.h options.h $(wildcard support/*.h) $(LIBUV_INC)/uv.h
 
 FLAGS = \
-	-D_GNU_SOURCE -Iflisp -Isupport \
+	-D_GNU_SOURCE -Iflisp -Isupport -I$(CMAKE_BINARY_DIR)/src \
 	-I$(call exec,$(LLVM_CONFIG) --includedir) \
 	-I$(LIBUV_INC) -I$(build_includedir) -DLIBRARY_EXPORTS \
 	-I$(BUILDDIR) -I$(JULIAHOME)/deps/valgrind
@@ -44,8 +44,6 @@ ifeq ($(USE_COPY_STACKS),1)
 override JCFLAGS += -DCOPY_STACKS
 endif
 
-FLISP_EXECUTABLE = $(CMAKE_BINARY_DIR)/src/flisp/flisp
-
 default: $(JULIA_BUILD_MODE) # contains either "debug" or "release"
 all: debug release
 
@@ -63,15 +61,7 @@ $(BUILDDIR)/%.o: %.cpp $(HEADERS) $(shell which $(LLVM_CONFIG)) | $(BUILDDIR)
 $(BUILDDIR)/%.dbg.obj: %.cpp $(HEADERS) $(shell which $(LLVM_CONFIG)) | $(BUILDDIR)
 	@$(call PRINT_CC, $(CXX) $(call exec,$(LLVM_CONFIG) --cxxflags) $(CPPFLAGS) $(CXXFLAGS) $(DEBUGFLAGS) -c $< -o $@)
 
-$(BUILDDIR)/julia_flisp.boot.inc: $(BUILDDIR)/julia_flisp.boot
-	@$(call PRINT_FLISP, $(call spawn,$(FLISP_EXECUTABLE)) ./bin2hex.scm < $< > $@)
-
-export julia_flisp.boot=$(BUILDDIR)/julia_flisp.boot
-$(julia_flisp.boot): julia-parser.scm julia-syntax.scm \
-	match.scm utils.scm jlfrontend.scm mk_julia_flisp_boot.scm $(FLISP_EXECUTABLE)
-	@$(call PRINT_FLISP, $(call spawn,$(FLISP_EXECUTABLE)) ./mk_julia_flisp_boot.scm)
-
-$(BUILDDIR)/ast.o $(BUILDDIR)/ast.dbg.obj: $(BUILDDIR)/julia_flisp.boot.inc flisp/*.h
+$(BUILDDIR)/ast.o $(BUILDDIR)/ast.dbg.obj: $(CMAKE_BINARY_DIR)/src/julia_flisp.boot.inc flisp/*.h
 $(BUILDDIR)/codegen.o $(BUILDDIR)/codegen.dbg.obj: intrinsics.cpp cgutils.cpp ccall.cpp abi_*.cpp
 $(BUILDDIR)/builtins.o $(BUILDDIR)/builtins.dbg.obj: table.c
 
