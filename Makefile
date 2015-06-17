@@ -109,9 +109,6 @@ $(build_private_libdir)/sys.o: VERSION $(BASE_SRCS) $(build_docdir)/helpdb.jl $(
 		-J $(call cygpath_w,$(build_private_libdir)/inference.ji) sysimg.jl \
 		|| { echo '*** This error is usually fixed by running `make clean`. If the error persists$(COMMA) try `make cleanall`. ***' && false; } )
 
-$(build_bindir)/stringreplace: contrib/stringreplace.c
-	@$(call PRINT_CC, $(CC) -o $(build_bindir)/stringreplace contrib/stringreplace.c)
-
 .PHONY: default debug release check-whitespace release-candidate \
 	julia-debug julia-release \
 	julia-ui-release julia-ui-debug julia-src-release julia-src-debug \
