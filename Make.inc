@@ -60,8 +60,6 @@ endif
 CC_BASE = $(shell echo $(CC) | cut -d' ' -f1)
 CXX_BASE = $(shell echo $(CXX) | cut -d' ' -f1)
 
-override JCXXFLAGS += -std=c++11
-
 JFFLAGS = -O2 -fPIC
 ifneq ($(USEMSVC),1)
 CPP = $(CC) -E
@@ -78,8 +76,6 @@ AS := ml
 endif #ARCH
 LD := link
 endif #USEMSVC
-RANLIB := ranlib
-
 
 # if not absolute, then relative to the directory of the julia executable
 override JCPPFLAGS += "-DJL_SYSTEM_IMAGE_PATH=\"$(build_private_libdir_rel)/sys.ji\""

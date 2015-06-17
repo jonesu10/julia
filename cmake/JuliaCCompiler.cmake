@@ -11,6 +11,8 @@ jl_set_option(USEGCC Off)
 jl_set_option(USECLANG Off)
 jl_set_option(USEMSVC Off)
 
+push_c_flags(CMAKE_CXX_FLAGS -std=c++11)
+
 if(CMAKE_C_COMPILER_ID STREQUAL "AppleClang" OR
     CMAKE_C_COMPILER_ID STREQUAL "Clang")
   jl_set_option(USECLANG On)
@@ -50,8 +52,6 @@ jl_set_make_flag(CC "${CMAKE_C_COMPILER}")
 jl_set_make_flag(CXX "${CMAKE_CXX_COMPILER}")
 string(SUBSTRING "${CMAKE_SHARED_LIBRARY_SUFFIX}" 1 -1 SHLIB)
 jl_set_make_flag(SHLIB_EXT "${SHLIB}")
-
-message("${CMAKE_C_FLAGS}")
 
 jl_set_make_flag(JCFLAGS "${CMAKE_C_FLAGS}")
 jl_set_make_flag(JCXXFLAGS "${CMAKE_CXX_FLAGS}")

@@ -6,6 +6,7 @@ INSTALL_F = $(JULIAHOME)/contrib/install.sh 644
 INSTALL_M = $(JULIAHOME)/contrib/install.sh 755
 JLDOWNLOAD = $(JULIAHOME)/deps/jldownload
 JLCHECKSUM = $(JULIAHOME)/deps/jlchecksum
+RANLIB := ranlib
 
 # Special comments:
 #
