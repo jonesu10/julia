@@ -5,7 +5,6 @@ default: helpdb.jl html
 # You can set these variables from the command line.
 SPHINXOPTS    =
 PAPER         =
-JULIAHOME     = $(abspath ..)
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4

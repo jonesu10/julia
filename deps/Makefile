@@ -1,5 +1,4 @@
 ## high-level setup ##
-JULIAHOME = $(abspath ..)
 include $(JULIAHOME)/Make.inc
 
 INSTALL_F = $(JULIAHOME)/contrib/install.sh 644

@@ -1,4 +1,3 @@
-JULIAHOME = $(abspath ../../..)
 include ../../../Make.inc
 
 JLDOWNLOAD = $(JULIAHOME)/deps/jldownload

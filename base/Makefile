@@ -1,4 +1,3 @@
-JULIAHOME = ..
 include ../Make.inc
 
 TAGGED_RELEASE_BANNER = ""

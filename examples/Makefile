@@ -1,4 +1,3 @@
-JULIAHOME = $(abspath ..)
 include $(JULIAHOME)/Make.inc
 
 FLAGS = -Wall -Wno-strict-aliasing -fno-omit-frame-pointer \

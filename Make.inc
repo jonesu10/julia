@@ -31,30 +31,11 @@ endif
 STDLIBCPP_FLAG =
 
 ifeq ($(USECLANG),1)
-override JCFLAGS += -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64
-override JCPPFLAGS +=
-override JCXXFLAGS += -pipe -fPIC -fno-rtti
-override DEBUGFLAGS += -O0 -g -DJL_DEBUG_BUILD -fstack-protector-all
-override SHIPFLAGS += -O3 -g
 ifeq ($(OS), Darwin)
 ifeq ($(USE_LIBCPP), 1)
-override CC += -stdlib=libc++ -mmacosx-version-min=10.7
-override CXX += -stdlib=libc++ -mmacosx-version-min=10.7
 override FC += -mmacosx-version-min=10.7
-else
-override CC += $(STDLIBCPP_FLAG) -mmacosx-version-min=10.6
-override CXX += $(STDLIBCPP_FLAG) -mmacosx-version-min=10.6
-endif
-override JCPPFLAGS += -D_LARGEFILE_SOURCE -D_DARWIN_USE_64_BIT_INODE=1
 endif
 endif
-
-ifeq ($(USEICC),1)
-override JCFLAGS += -std=gnu99 -pipe -fPIC -fno-strict-aliasing -D_FILE_OFFSET_BITS=64 -fp-model precise -fp-model except -no-ftz
-override JCPPFLAGS +=
-override JCXXFLAGS += -pipe -fPIC -fno-rtti
-override DEBUGFLAGS += -O0 -g -DJL_DEBUG_BUILD -fstack-protector-all
-override SHIPFLAGS += -O3 -g -falign-functions
 endif
 
 CC_BASE = $(shell echo $(CC) | cut -d' ' -f1)

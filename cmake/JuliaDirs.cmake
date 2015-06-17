@@ -33,6 +33,8 @@ function(set_build_dir name val)
   file(MAKE_DIRECTORY "${val}")
 endfunction()
 
+jl_set_make_flag(JULIAHOME "${CMAKE_SOURCE_DIR}")
+
 # Directories where things get built into
 set_build_dir(prefix "${CMAKE_BINARY_DIR}/usr")
 set_build_dir(staging "${CMAKE_BINARY_DIR}/usr-staging")
