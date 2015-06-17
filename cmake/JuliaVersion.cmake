@@ -30,10 +30,21 @@ endif()
 
 jl_set_make_flag(JULIA_COMMIT "${JULIA_COMMIT}")
 
-# TODO Check match??
-string(REGEX REPLACE "^([0-9]+)\\.([0-9]+)\\..*$" "\\1.\\2"
-  VERSDIR "${JULIA_VERSION}")
-set(VERSDIR "v${VERSDIR}")
+if(NOT "${JULIA_VERSION}" MATCHES
+    "^([0-9]+)\\.([0-9]+)\\.([0-9]+)(|-.*)$")
+  message(FATAL_ERROR "Invalid version string")
+endif()
+
+set(JULIA_VERSION_MAJOR "${CMAKE_MATCH_1}")
+set(JULIA_VERSION_MINOR "${CMAKE_MATCH_2}")
+set(JULIA_VERSION_PATCH "${CMAKE_MATCH_2}")
+if(CMAKE_MATCH_3 STREQUAL "")
+  set(JULIA_VERSION_IS_RELEASE 1)
+else()
+  set(JULIA_VERSION_IS_RELEASE 0)
+endif()
+
+set(VERSDIR "v${JULIA_VERSION_MAJOR}.${JULIA_VERSION_MINOR}")
 
 # TODO: Code bundled with Julia should be installed into a versioned directory,
 # prefix/share/julia/VERSDIR, so that in the future one can have multiple
