@@ -28,9 +28,6 @@ endif
 julia-base:
 	@$(MAKE) $(QUIET_MAKE) -C base
 
-julia-libccalltest:
-	@$(MAKE) $(QUIET_MAKE) -C test libccalltest
-
 julia-src-release julia-src-debug : julia-src-% :
 	@$(MAKE) $(QUIET_MAKE) -C src libjulia-$*
 
@@ -40,7 +37,7 @@ julia-ui-release julia-ui-debug : julia-ui-% : julia-src-%
 julia-sysimg : julia-base julia-ui-$(JULIA_BUILD_MODE)
 	@$(MAKE) $(QUIET_MAKE) $(build_private_libdir)/sys.$(SHLIB_EXT) JULIA_BUILD_MODE=$(JULIA_BUILD_MODE)
 
-julia-debug julia-release : julia-% : julia-ui-% julia-symlink julia-sysimg julia-libccalltest
+julia-debug julia-release : julia-% : julia-ui-% julia-symlink julia-sysimg
 
 debug release : % : julia-%
 

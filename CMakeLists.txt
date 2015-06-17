@@ -130,8 +130,9 @@ add_custom_target(julia-man1
   DEPENDS "${build_man1dir}/julia.1")
 
 add_subdirectory(deps)
+add_subdirectory(test)
 
 add_custom_target(julia ALL
-  DEPENDS julia-deps
+  DEPENDS julia-deps libccalltest
   COMMAND make ${jl_make_flags}
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
