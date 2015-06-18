@@ -12,7 +12,7 @@ $(build_docdir):
 	@cp -R examples/*.jl $@/examples/
 	@cp -R examples/clustermanager $@/examples/
 
-julia-symlink: julia-ui-$(JULIA_BUILD_MODE)
+julia-symlink:
 ifneq ($(OS),WINNT)
 ifndef JULIA_VAGRANT_BUILD
 	@ln -sf "$(shell contrib/relative_path.sh "$(JULIAHOME)" "$(JULIA_EXECUTABLE)")" julia
@@ -22,13 +22,10 @@ endif
 julia-base:
 	@$(MAKE) $(QUIET_MAKE) -C base
 
-julia-ui-release julia-ui-debug : julia-ui-% :
-	@$(MAKE) $(QUIET_MAKE) -C ui julia-$*
-
-julia-sysimg : julia-base julia-ui-$(JULIA_BUILD_MODE)
+julia-sysimg : julia-base
 	@$(MAKE) $(QUIET_MAKE) $(build_private_libdir)/sys.$(SHLIB_EXT) JULIA_BUILD_MODE=$(JULIA_BUILD_MODE)
 
-julia-debug julia-release : julia-% : julia-ui-% julia-symlink julia-sysimg
+julia-debug julia-release : julia-% : julia-symlink julia-sysimg
 
 debug release : % : julia-%
 
@@ -102,6 +99,5 @@ $(build_private_libdir)/sys.o: VERSION $(BASE_SRCS) $(build_docdir)/helpdb.jl $(
 
 .PHONY: default debug release check-whitespace release-candidate \
 	julia-debug julia-release \
-	julia-ui-release julia-ui-debug \
 	julia-symlink julia-base julia-sysimg \
 	test testall testall1 test

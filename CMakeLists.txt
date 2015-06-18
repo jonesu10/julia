@@ -273,9 +273,9 @@ add_subdirectory(test)
 add_subdirectory(contrib)
 add_subdirectory(src)
 add_subdirectory(doc)
+add_subdirectory(ui)
 
 add_custom_target(julia ALL
-  DEPENDS julia-deps libccalltest stringreplace flmain julia_flisp_boot_inc
-  libjulia
+  DEPENDS libccalltest stringreplace julia-ui
   COMMAND make ${jl_make_flags}
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
