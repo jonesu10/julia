@@ -23,16 +23,16 @@ LLVMLINK = $(call exec,$(LLVM_CONFIG) --ldflags) -lLLVM-$(call exec,$(LLVM_CONFI
 else
 LLVMLINK =
 endif
-JLDFLAGS += $(LDFLAGS) $(NO_WHOLE_ARCHIVE) $(OSLIBS) $(LLVMLINK) $(RPATH)
+override JLDFLAGS += $(LDFLAGS) $(NO_WHOLE_ARCHIVE) $(OSLIBS) $(LLVMLINK) $(RPATH)
 
 ifeq ($(USE_SYSTEM_LIBM),0)
 ifneq ($(UNTRUSTED_SYSTEM_LIBM),0)
-JLDFLAGS += $(WHOLE_ARCHIVE) $(build_libdir)/libopenlibm.a $(NO_WHOLE_ARCHIVE)
+override JLDFLAGS += $(WHOLE_ARCHIVE) $(build_libdir)/libopenlibm.a $(NO_WHOLE_ARCHIVE)
 endif
 endif
 
 ifeq ($(OS),WINNT)
-JLDFLAGS += -municode
+override JLDFLAGS += -municode
 endif
 
 default: release

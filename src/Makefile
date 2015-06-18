@@ -38,9 +38,7 @@ override SHIPFLAGS += $(FLAGS)
 
 SRCS += gc
 
-ifeq ($(USE_COPY_STACKS),1)
 override JCFLAGS += -DCOPY_STACKS
-endif
 
 default: $(JULIA_BUILD_MODE) # contains either "debug" or "release"
 all: debug release

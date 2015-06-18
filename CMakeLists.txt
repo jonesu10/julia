@@ -68,6 +68,8 @@ jl_option(LLVM_DEBUG "" Off)
 jl_option(BUILD_LLDB "Build lldb" Off)
 jl_option(BUILD_LLVM_CLANG "Build clang and compiler-rt" ${BUILD_LLDB})
 
+option(USE_COPY_STACKS "" On)
+
 include(JuliaDeps)
 
 ## Settings for various Intel tools
@@ -125,6 +127,11 @@ add_custom_command(OUTPUT "${build_man1dir}/julia.1"
 add_custom_target(julia-man1
   DEPENDS "${build_man1dir}/julia.1")
 
+# Intel VTune Amplifier
+if(USE_INTEL_JITEVENTS)
+  push_c_flags(JLCPP_FLAGS -DJL_USE_INTEL_JITEVENTS)
+endif()
+
 # TODO
 if(USE_SYSTEM_LIBUV)
   set(LIBUV /usr/lib/libuv-julia.a)
@@ -158,11 +165,11 @@ endif()
 jl_set_make_flag(LLVM_CONFIG "${LLVM_CONFIG}")
 
 if(APPLE)
-  push_c_flags(WHOLE_ARCHIVE -Xlinker -all_load)
-  push_c_flags(NO_WHOLE_ARCHIVE)
+  set(WHOLE_ARCHIVE "-Xlinker -all_load")
+  set(NO_WHOLE_ARCHIVE)
 elseif(NOT USEMSVC)
-  push_c_flags(WHOLE_ARCHIVE -Wl,--whole-archive)
-  push_c_flags(NO_WHOLE_ARCHIVE -Wl,--no-whole-archive)
+  set(WHOLE_ARCHIVE "-Wl,--whole-archive")
+  set(NO_WHOLE_ARCHIVE "-Wl,--no-whole-archive")
 endif()
 
 jl_set_make_flag(WHOLE_ARCHIVE "${WHOLE_ARCHIVE}")
@@ -184,7 +191,7 @@ endif()
 
 jl_set_make_flag(LIBUNWIND "${LIBUNWIND}")
 
-if(CMAKE_SYSTEM_NAME STREQUAL "LINUX")
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   push_c_flags(OSLIBS -ldl -lrt -lpthread -Wl,--export-dynamic
     -Wl,--no-whole-archive ${LIBUNWIND})
   # TODO

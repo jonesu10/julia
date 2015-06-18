@@ -11,8 +11,6 @@ HOSTCC = $(CC)
 # Figure out OS and architecture
 OS := $(BUILD_OS)
 
-USE_COPY_STACKS = 1
-
 # flag for disabling assertions
 ifeq ($(FORCE_ASSERTIONS), 1)
 DISABLE_ASSERTIONS =
@@ -304,13 +302,7 @@ INSTALL_NAME_CMD = install_name_tool -id $(INSTALL_NAME_ID_DIR)
 INSTALL_NAME_CHANGE_CMD = install_name_tool -change
 endif
 
-# Intel VTune Amplifier
-ifeq ($(USE_INTEL_JITEVENTS), 1)
-override JCPPFLAGS += -DJL_USE_INTEL_JITEVENTS
-endif
-
 # Intel libraries
-
 ifeq ($(USE_INTEL_LIBM), 1)
 USE_SYSTEM_LIBM = 1
 LIBM = -L$(MKLROOT)/../compiler/lib/intel64 -limf
