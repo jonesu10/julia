@@ -67,18 +67,18 @@ CORE_SRCS := base/boot.jl base/coreimg.jl \
 BASE_SRCS := $(wildcard base/*.jl base/*/*.jl base/*/*/*.jl)
 
 $(build_private_libdir)/inference0.o: $(CORE_SRCS)
-	@$(call PRINT_JULIA, cd base && \
+	@$(call PRINT_JULIA, cd $(CMAKE_BINARY_DIR)/base && \
 	$(call spawn,$(JULIA_EXECUTABLE)) -C $(JULIA_CPU_TARGET) --build $(call cygpath_w,$(build_private_libdir)/inference0) -f \
 		coreimg.jl)
 
 $(build_private_libdir)/inference.o: $(build_private_libdir)/inference0.$(SHLIB_EXT)
-	@$(call PRINT_JULIA, cd base && \
+	@$(call PRINT_JULIA, cd $(CMAKE_BINARY_DIR)/base && \
 	$(call spawn,$(JULIA_EXECUTABLE)) -C $(JULIA_CPU_TARGET) --build $(call cygpath_w,$(build_private_libdir)/inference) -f \
 		-J $(call cygpath_w,$(build_private_libdir)/inference0.ji) coreimg.jl)
 
 COMMA:=,
 $(build_private_libdir)/sys.o: VERSION $(BASE_SRCS) $(build_docdir)/helpdb.jl $(build_private_libdir)/inference.$(SHLIB_EXT)
-	@$(call PRINT_JULIA, cd base && \
+	@$(call PRINT_JULIA, cd $(CMAKE_BINARY_DIR)/base && \
 	$(call spawn,$(JULIA_EXECUTABLE)) -C $(JULIA_CPU_TARGET) --build $(call cygpath_w,$(build_private_libdir)/sys) -f \
 		-J $(call cygpath_w,$(build_private_libdir)/inference.ji) sysimg.jl \
 		|| { echo '*** This error is usually fixed by running `make clean`. If the error persists$(COMMA) try `make cleanall`. ***' && false; } )
