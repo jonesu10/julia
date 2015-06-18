@@ -254,11 +254,27 @@ endforeach()
 # JULIA_CPU_TARGET
 
 add_custom_command(OUTPUT "${build_private_libdir}/inference0.o"
+  "${build_private_libdir}/inference0.ji"
   COMMAND "${build_bindir}/julia" -C native
   --build "${build_private_libdir}/inference0" coreimg.jl
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
   DEPENDS ${core_img_SRCS})
 
-add_custom_target(julia-inference0 ALL
+add_custom_target(julia-inference0
   DEPENDS "${build_private_libdir}/inference0.o"
   julia-ui  julia-copy-all-base)
+
+execute_process(COMMAND "${CMAKE_COMMAND}" -E
+  touch "${CMAKE_CURRENT_BINARY_DIR}/dummy.c")
+
+add_library(julia-inference0-so MODULE "${CMAKE_CURRENT_BINARY_DIR}/dummy.c")
+
+target_link_libraries(julia-inference0-so
+  "${build_private_libdir}/inference0.o"
+  libjulia)
+
+set_target_properties(julia-inference0-so PROPERTIES
+  OUTPUT_NAME inference0
+  LIBRARY_OUTPUT_DIRECTORY "${build_private_libdir}")
+
+add_dependencies(julia-inference0-so julia-inference0)
