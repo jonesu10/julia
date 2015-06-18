@@ -16,6 +16,8 @@ endif()
 # TODO? Maybe make VERSION a configure file rather than reading it
 
 file(READ "${CMAKE_SOURCE_DIR}/VERSION" JULIA_VERSION)
+# Trick to trigger re-configure when VERSION is edited.
+configure_file(VERSION VERSION.cpy COPYONLY)
 string(STRIP "${JULIA_VERSION}" JULIA_VERSION)
 
 jl_set_make_flag(JULIA_VERSION "${JULIA_VERSION}")

@@ -12,29 +12,15 @@ $(build_docdir):
 	@cp -R examples/*.jl $@/examples/
 	@cp -R examples/clustermanager $@/examples/
 
-julia-symlink:
-ifneq ($(OS),WINNT)
-ifndef JULIA_VAGRANT_BUILD
-	@ln -sf "$(shell contrib/relative_path.sh "$(JULIAHOME)" "$(JULIA_EXECUTABLE)")" julia
-endif
-endif
-
 julia-base:
 	@$(MAKE) $(QUIET_MAKE) -C base
 
 julia-sysimg : julia-base
 	@$(MAKE) $(QUIET_MAKE) $(build_private_libdir)/sys.$(SHLIB_EXT) JULIA_BUILD_MODE=$(JULIA_BUILD_MODE)
 
-julia-debug julia-release : julia-% : julia-symlink julia-sysimg
+julia-debug julia-release : julia-% : julia-sysimg
 
 debug release : % : julia-%
-
-check-whitespace:
-ifneq ($(NO_GIT), 1)
-	@contrib/check-whitespace.sh
-else
-	$(warn "Skipping whitespace check because git is unavailable")
-endif
 
 $(build_docdir)/helpdb.jl: doc/helpdb.jl
 	@cp $< $@
@@ -97,7 +83,7 @@ $(build_private_libdir)/sys.o: VERSION $(BASE_SRCS) $(build_docdir)/helpdb.jl $(
 		-J $(call cygpath_w,$(build_private_libdir)/inference.ji) sysimg.jl \
 		|| { echo '*** This error is usually fixed by running `make clean`. If the error persists$(COMMA) try `make cleanall`. ***' && false; } )
 
-.PHONY: default debug release check-whitespace release-candidate \
+.PHONY: default debug release release-candidate \
 	julia-debug julia-release \
-	julia-symlink julia-base julia-sysimg \
+	julia-base julia-sysimg \
 	test testall testall1 test

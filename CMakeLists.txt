@@ -164,6 +164,26 @@ endif()
 
 jl_set_make_flag(LLVM_CONFIG "${LLVM_CONFIG}")
 
+# TODO FindLLVM
+execute_process(COMMAND "${LLVM_CONFIG}" --includedir
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  OUTPUT_VARIABLE LLVM_INC)
+execute_process(COMMAND "${LLVM_CONFIG}" --ldflags
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  OUTPUT_VARIABLE LLVM_LDFLAGS)
+execute_process(COMMAND "${LLVM_CONFIG}" --libs
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  OUTPUT_VARIABLE LLVM_LIBS)
+execute_process(COMMAND "${LLVM_CONFIG}" --system-libs
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  OUTPUT_VARIABLE LLVM_SYSTEMLIBS)
+execute_process(COMMAND "${LLVM_CONFIG}" --version
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  OUTPUT_VARIABLE LLVM_VERSION)
+execute_process(COMMAND "${LLVM_CONFIG}" --cxxflags
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  OUTPUT_VARIABLE LLVM_CXXFLAGS)
+
 if(APPLE)
   set(WHOLE_ARCHIVE "-Xlinker -all_load")
   set(NO_WHOLE_ARCHIVE)
@@ -276,6 +296,6 @@ add_subdirectory(doc)
 add_subdirectory(ui)
 
 add_custom_target(julia ALL
-  DEPENDS libccalltest stringreplace julia-ui
+  DEPENDS libccalltest stringreplace julia-ui julia_symlink
   COMMAND make ${jl_make_flags}
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
