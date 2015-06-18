@@ -107,11 +107,6 @@ if(USE_COPY_STACKS)
   add_definitions(-DCOPY_STACKS)
 endif()
 
-# add_custom_target(libjulia
-#   DEPENDS julia-deps flmain julia_flisp_boot_inc
-#   COMMAND make libjulia-release ${jl_make_flags}
-#   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
-
 add_library(libjulia SHARED ${libjulia_SRCS})
 
 set_target_properties(libjulia PROPERTIES
