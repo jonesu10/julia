@@ -61,6 +61,22 @@ set(libjulia_SRCS
   simplevector.c
   gc.c)
 
+# TODO FindLLVM
+execute_process("${LLVM_CONFIG}" --includedir
+  OUTPUT_VARIABLE LLVM_INC)
+
+include_directories(. "${CMAKE_CURRENT_BINARY_DIR}"
+  flisp support
+  ../deps/valgrind
+  "${LIBUV_INC}"
+  "${LLVM_INC}")
+
+add_definitions(-D_GNU_SOURCE -DLIBRARY_EXPORTS)
+if(NOT USEMSVC)
+  add_definitions(-Wall -Wno-strict-aliasing -fno-omit-frame-pointer
+    -fvisibility=hidden -fno-common)
+endif()
+
 add_custom_target(libjulia
   DEPENDS julia-deps flmain julia_flisp_boot_inc
   COMMAND make libjulia-release ${jl_make_flags}

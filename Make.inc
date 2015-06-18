@@ -216,11 +216,7 @@ endif
 endif
 
 ifeq ($(USE_SYSTEM_LLVM), 1)
-LLVM_CONFIG ?= llvm-config$(EXE)
-override JCPPFLAGS+=-DSYSTEM_LLVM
 LLVM_VER = $(shell $(LLVM_CONFIG) --version)
-else
-LLVM_CONFIG=$(build_bindir)/llvm-config$(EXE)
 endif
 
 ifeq ($(USE_SYSTEM_PCRE), 1)

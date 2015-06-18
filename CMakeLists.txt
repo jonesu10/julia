@@ -148,6 +148,31 @@ endif()
 jl_set_make_flag(LIBUTF8PROC "${LIBUTF8PROC}")
 jl_set_make_flag(UTF8PROC_INC "${UTF8PROC_INC}")
 
+if(USE_SYSTEM_LLVM)
+  set(LLVM_CONFIG "llvm-config${CMAKE_EXECUTABLE_SUFFIX}")
+  push_c_flags(JL_CPP_FLAGS -DSYSTEM_LLVM)
+else()
+  set(LLVM_CONFIG "${build_bindir}/llvm-config${CMAKE_EXECUTABLE_SUFFIX}")
+endif()
+
+jl_set_make_flag(LLVM_CONFIG "${LLVM_CONFIG}")
+
+jl_set_make_flag(CC "${CMAKE_C_COMPILER}")
+jl_set_make_flag(CXX "${CMAKE_CXX_COMPILER}")
+string(SUBSTRING "${CMAKE_SHARED_LIBRARY_SUFFIX}" 1 -1 SHLIB)
+jl_set_make_flag(SHLIB_EXT "${SHLIB}")
+
+jl_set_make_flag(JCFLAGS "${CMAKE_C_FLAGS}")
+jl_set_make_flag(JCXXFLAGS "${CMAKE_CXX_FLAGS}")
+
+jl_set_make_flag(JCPPFLAGS "${JL_CPP_FLAGS}")
+
+jl_set_make_flag(DEBUGFLAGS "${CMAKE_C_FLAGS_DEBUG}")
+jl_set_make_flag(SHIPFLAGS "${CMAKE_C_FLAGS_RELEASE}")
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${JL_CPP_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${JL_CPP_FLAGS}")
+
 jl_get_make_flags(jl_make_flags)
 
 # message("${jl_make_flags}")

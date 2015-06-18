@@ -78,16 +78,3 @@ if(NOT USECLANG)
       "Address Sanitizer only supported with clang. Try setting SANITIZE=0")
   endif()
 endif()
-
-jl_set_make_flag(CC "${CMAKE_C_COMPILER}")
-jl_set_make_flag(CXX "${CMAKE_CXX_COMPILER}")
-string(SUBSTRING "${CMAKE_SHARED_LIBRARY_SUFFIX}" 1 -1 SHLIB)
-jl_set_make_flag(SHLIB_EXT "${SHLIB}")
-
-jl_set_make_flag(JCFLAGS "${CMAKE_C_FLAGS}")
-jl_set_make_flag(JCXXFLAGS "${CMAKE_CXX_FLAGS}")
-
-jl_set_make_flag(JCPPFLAGS "${JL_CPP_FLAGS}")
-
-jl_set_make_flag(DEBUGFLAGS "${CMAKE_C_FLAGS_DEBUG}")
-jl_set_make_flag(SHIPFLAGS "${CMAKE_C_FLAGS_RELEASE}")
