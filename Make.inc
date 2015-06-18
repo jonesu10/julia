@@ -198,23 +198,6 @@ ifeq ($(ISX86),1)
 endif
 endif
 
-ifeq ($(OS),WINNT)
-LIBUNWIND=
-else
-ifeq ($(USE_SYSTEM_LIBUNWIND), 1)
-ifneq ($(OS),Darwin)
-LIBUNWIND=-lunwind-generic -lunwind
-endif
-else
-ifeq ($(OS),Darwin)
-LIBUNWIND=$(build_libdir)/libosxunwind.a
-override JCPPFLAGS+=-DLIBOSXUNWIND
-else
-LIBUNWIND=$(build_libdir)/libunwind-generic.a $(build_libdir)/libunwind.a
-endif
-endif
-endif
-
 ifeq ($(USE_SYSTEM_LLVM), 1)
 LLVM_VER = $(shell $(LLVM_CONFIG) --version)
 endif
@@ -316,65 +299,9 @@ else
   RPATH_ORIGIN = -Wl,-rpath,'$$ORIGIN' -Wl,-z,origin
 endif
 
-# --whole-archive
-ifeq ($(OS), Darwin)
-  WHOLE_ARCHIVE = -Xlinker -all_load
-  NO_WHOLE_ARCHIVE =
-else ifneq ($(USEMSVC), 1)
-  WHOLE_ARCHIVE = -Wl,--whole-archive
-  NO_WHOLE_ARCHIVE = -Wl,--no-whole-archive
-endif
-
-ifeq ($(OS), Linux)
-OSLIBS += -ldl -lrt -lpthread -Wl,--export-dynamic -Wl,--no-whole-archive $(LIBUNWIND)
-ifneq ($(SANITIZE),1)
-ifneq ($(SANITIZE_MEMORY),1)
-ifneq ($(LLVM_SANITIZE),1)
-OSLIBS += -Wl,--version-script=$(JULIAHOME)/src/julia.expmap
-endif
-endif
-endif
-JLDFLAGS = -Wl,-Bdynamic
-ifeq (-Bsymbolic-functions, $(shell $(LD) --help | grep -o -e "-Bsymbolic-functions"))
-JLIBLDFLAGS = -Wl,-Bsymbolic-functions
-else
-JLIBLDFLAGS =
-endif
-else #Linux
-JLIBLDFLAGS =
-endif
-
-ifeq ($(OS), FreeBSD)
-JLDFLAGS = -Wl,-Bdynamic
-OSLIBS += -lkvm -lrt -Wl,--export-dynamic -Wl,--version-script=$(JULIAHOME)/src/julia.expmap $(NO_WHOLE_ARCHIVE) $(LIBUNWIND)
-endif
-
 ifeq ($(OS), Darwin)
 INSTALL_NAME_CMD = install_name_tool -id $(INSTALL_NAME_ID_DIR)
 INSTALL_NAME_CHANGE_CMD = install_name_tool -change
-SHLIB_EXT = dylib
-OSLIBS += -ldl -Wl,-w -framework CoreFoundation -framework CoreServices $(LIBUNWIND)
-WHOLE_ARCHIVE = -Xlinker -all_load
-NO_WHOLE_ARCHIVE =
-JLDFLAGS =
-HAVE_SSP = 1
-endif
-
-ifeq ($(OS), WINNT)
-ifneq ($(USEMSVC), 1)
-HAVE_SSP = 1
-OSLIBS += -Wl,--export-all-symbols -Wl,--version-script=$(JULIAHOME)/src/julia.expmap \
-	$(NO_WHOLE_ARCHIVE) -lpsapi -lkernel32 -lws2_32 -liphlpapi -lwinmm -ldbghelp
-JLDFLAGS = -Wl,--stack,8388608
-ifeq ($(ARCH),i686)
-JLDFLAGS += -Wl,--large-address-aware
-endif
-else #USEMSVC
-OSLIBS += kernel32.lib ws2_32.lib psapi.lib advapi32.lib iphlpapi.lib shell32.lib winmm.lib
-JLDFLAGS = -stack:8388608
-endif
-JCPPFLAGS += -D_WIN32_WINNT=0x0502
-UNTRUSTED_SYSTEM_LIBM = 1
 endif
 
 # Intel VTune Amplifier
@@ -417,13 +344,6 @@ ifeq ($(USE_INTEL_MKL_FFT), 1)
 USE_SYSTEM_FFTW = 1
 LIBFFTWNAME = libmkl_rt
 LIBFFTWFNAME = libmkl_rt
-endif
-
-ifeq ($(HAVE_SSP),1)
-override JCPPFLAGS += -DHAVE_SSP=1
-ifeq ($(USEGCC),1)
-OSLIBS += -lssp
-endif
 endif
 
 # ATLAS

@@ -157,6 +157,90 @@ endif()
 
 jl_set_make_flag(LLVM_CONFIG "${LLVM_CONFIG}")
 
+if(APPLE)
+  push_c_flags(WHOLE_ARCHIVE -Xlinker -all_load)
+  push_c_flags(NO_WHOLE_ARCHIVE)
+elseif(NOT USEMSVC)
+  push_c_flags(WHOLE_ARCHIVE -Wl,--whole-archive)
+  push_c_flags(NO_WHOLE_ARCHIVE -Wl,--no-whole-archive)
+endif()
+
+jl_set_make_flag(WHOLE_ARCHIVE "${WHOLE_ARCHIVE}")
+jl_set_make_flag(NO_WHOLE_ARCHIVE "${NO_WHOLE_ARCHIVE}")
+
+if(WIN32)
+  push_c_flags(LIBUNWIND)
+elseif(USE_SYSTEM_LIBUNWIND)
+  if(NOT APPLE)
+    push_c_flags(LIBUNWIND -lunwind-generic -lunwind)
+  endif()
+elseif(APPLE)
+  push_c_flags(LIBUNWIND ${build_libdir}/libosxunwind.a)
+  push_c_flags(JL_CPP_FLAGS -DLIBOSXUNWIND)
+else()
+  push_c_flags(LIBUNWIND ${build_libdir}/libunwind-generic.a
+    ${build_libdir}/libunwind.a)
+endif()
+
+jl_set_make_flag(LIBUNWIND "${LIBUNWIND}")
+
+if(CMAKE_SYSTEM_NAME STREQUAL "LINUX")
+  push_c_flags(OSLIBS -ldl -lrt -lpthread -Wl,--export-dynamic
+    -Wl,--no-whole-archive ${LIBUNWIND})
+  # TODO
+  if(NOT SANITIZE AND NOT SANITIZE_MEMORY AND NOT LLVM_SANITIZE)
+    push_c_flags(-Wl,--version-script=${CMAKE_SOURCE_DIR}/src/julia.expmap)
+  endif()
+  push_c_flags(JL_LD_FLAGS -Wl,-Bdynamic)
+  # TODO try compile?
+  push_c_flags(CMAKE_SHARED_LINKER_FLAGS -Wl,-Bsymbolic-functions)
+endif()
+
+if(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
+  push_c_flags(JL_LD_FLAGS -Wl,-Bdynamic)
+  push_c_flags(OSLIBS -lkvm -lrt -Wl,--export-dynamic
+    -Wl,--version-script=${CMAKE_SOURCE_DIR}/src/julia.expmap
+    ${NO_WHOLE_ARCHIVE} ${LIBUNWIND})
+endif()
+
+if(APPLE)
+  push_c_flags(OSLIBS -ldl -Wl,-w -framework CoreFoundation
+    -framework CoreServices ${LIBUNWIND})
+  set(HAVE_SSP On)
+endif()
+
+if(WIN32)
+  if(NOT USEMSVC)
+    set(HAVE_SSP On)
+    push_c_flags(OSLIBS -Wl,--export-all-symbols
+      -Wl,--version-script=${CMAKE_SOURCE_DIR}/src/julia.expmap
+      ${NO_WHOLE_ARCHIVE} -lpsapi -lkernel32 -lws2_32 -liphlpapi -lwinmm
+      -ldbghelp)
+    push_c_flags(JL_LD_FLAGS, -Wl,--stack,8388608)
+    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+      push_c_flags(JL_LD_FLAGS -Wl,--large-address-aware)
+    endif()
+  else() #USEMSVC
+    push_c_flags(OSLIBS kernel32.lib ws2_32.lib psapi.lib advapi32.lib
+      iphlpapi.lib shell32.lib winmm.lib)
+    push_c_flags(JL_LD_FLAGS -stack:8388608)
+  endif()
+  push_c_flags(JL_CPP_FLAGS -D_WIN32_WINNT=0x0502)
+  set(UNTRUSTED_SYSTEM_LIBM On CACHE INTERNAL "" FORCE)
+  jl_set_option(UNTRUSTED_SYSTEM_LIBM On)
+endif()
+
+if(HAVE_SSP)
+  push_c_flags(JL_CPP_FLAGS -DHAVE_SSP=1)
+  if(USEGCC)
+    push_c_flags(OSLIBS -lssp)
+  endif()
+endif()
+
+jl_set_make_flag(OSLIBS "${OSLIBS}")
+jl_set_make_flag(JLDFLAGS "${JL_LD_FLAGS}")
+jl_set_make_flag(JLIBLDFLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
+
 jl_set_make_flag(CC "${CMAKE_C_COMPILER}")
 jl_set_make_flag(CXX "${CMAKE_CXX_COMPILER}")
 string(SUBSTRING "${CMAKE_SHARED_LIBRARY_SUFFIX}" 1 -1 SHLIB)

@@ -4,7 +4,7 @@
 jl_option(USE_LIBCPP "Use libc++" Off)
 # assume we don't have LIBSSP support in our compiler,
 # will enable later if likely true
-jl_option(HAVE_SSP "Have LibSSP support" Off)
+set(HAVE_SSP Off)
 
 jl_set_option(USEICC Off)
 jl_set_option(USEGCC Off)
