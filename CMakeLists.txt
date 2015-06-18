@@ -297,6 +297,6 @@ add_subdirectory(ui)
 add_subdirectory(base)
 
 add_custom_target(julia ALL
-  DEPENDS libccalltest stringreplace julia-ui julia_symlink julia-copy-all-base
+  DEPENDS libccalltest stringreplace julia-ui julia_symlink julia-inference0
   COMMAND make ${jl_make_flags}
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")

@@ -250,3 +250,15 @@ set(sys_img_SRCS
 foreach(jl_file ${core_img_SRCS} ${sys_img_SRCS})
   copy_jl(${jl_file})
 endforeach()
+
+# JULIA_CPU_TARGET
+
+add_custom_command(OUTPUT "${build_private_libdir}/inference0.o"
+  COMMAND "${build_bindir}/julia" -C native
+  --build "${build_private_libdir}/inference0" coreimg.jl
+  WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+  DEPENDS ${core_img_SRCS})
+
+add_custom_target(julia-inference0 ALL
+  DEPENDS "${build_private_libdir}/inference0.o"
+  julia-ui  julia-copy-all-base)
