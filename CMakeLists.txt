@@ -152,9 +152,6 @@ else()
   set(UTF8PROC_INC "${build_includedir}")
 endif()
 
-jl_set_make_flag(LIBUTF8PROC "${LIBUTF8PROC}")
-jl_set_make_flag(UTF8PROC_INC "${UTF8PROC_INC}")
-
 if(USE_SYSTEM_LLVM)
   set(LLVM_CONFIG "llvm-config${CMAKE_EXECUTABLE_SUFFIX}")
   add_definitions(-DSYSTEM_LLVM)
@@ -208,8 +205,6 @@ else()
   push_c_flags(LIBUNWIND ${build_libdir}/libunwind-generic.a
     ${build_libdir}/libunwind.a)
 endif()
-
-jl_set_make_flag(LIBUNWIND "${LIBUNWIND}")
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   push_c_flags(OSLIBS -ldl -lrt -lpthread -Wl,--export-dynamic
