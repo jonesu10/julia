@@ -157,7 +157,7 @@ jl_set_make_flag(UTF8PROC_INC "${UTF8PROC_INC}")
 
 if(USE_SYSTEM_LLVM)
   set(LLVM_CONFIG "llvm-config${CMAKE_EXECUTABLE_SUFFIX}")
-  push_c_flags(JL_CPP_FLAGS -DSYSTEM_LLVM)
+  add_definitions(-DSYSTEM_LLVM)
 else()
   set(LLVM_CONFIG "${build_bindir}/llvm-config${CMAKE_EXECUTABLE_SUFFIX}")
 endif()
@@ -203,7 +203,7 @@ elseif(USE_SYSTEM_LIBUNWIND)
   endif()
 elseif(APPLE)
   push_c_flags(LIBUNWIND ${build_libdir}/libosxunwind.a)
-  push_c_flags(JL_CPP_FLAGS -DLIBOSXUNWIND)
+  add_definitions(-DLIBOSXUNWIND)
 else()
   push_c_flags(LIBUNWIND ${build_libdir}/libunwind-generic.a
     ${build_libdir}/libunwind.a)
@@ -252,37 +252,22 @@ if(WIN32)
       iphlpapi.lib shell32.lib winmm.lib)
     push_c_flags(JL_LD_FLAGS -stack:8388608)
   endif()
-  push_c_flags(JL_CPP_FLAGS -D_WIN32_WINNT=0x0502)
+  add_definitions(-D_WIN32_WINNT=0x0502)
   set(UNTRUSTED_SYSTEM_LIBM On CACHE INTERNAL "" FORCE)
   jl_set_option(UNTRUSTED_SYSTEM_LIBM On)
 endif()
 
 if(HAVE_SSP)
-  push_c_flags(JL_CPP_FLAGS -DHAVE_SSP=1)
+  add_definitions(-DHAVE_SSP=1)
   if(USEGCC)
     push_c_flags(OSLIBS -lssp)
   endif()
 endif()
 
-jl_set_make_flag(OSLIBS "${OSLIBS}")
-jl_set_make_flag(JLDFLAGS "${JL_LD_FLAGS}")
-jl_set_make_flag(JLIBLDFLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
-
 jl_set_make_flag(CC "${CMAKE_C_COMPILER}")
 jl_set_make_flag(CXX "${CMAKE_CXX_COMPILER}")
 string(SUBSTRING "${CMAKE_SHARED_LIBRARY_SUFFIX}" 1 -1 SHLIB)
 jl_set_make_flag(SHLIB_EXT "${SHLIB}")
-
-jl_set_make_flag(JCFLAGS "${CMAKE_C_FLAGS}")
-jl_set_make_flag(JCXXFLAGS "${CMAKE_CXX_FLAGS}")
-
-jl_set_make_flag(JCPPFLAGS "${JL_CPP_FLAGS}")
-
-jl_set_make_flag(DEBUGFLAGS "${CMAKE_C_FLAGS_DEBUG}")
-jl_set_make_flag(SHIPFLAGS "${CMAKE_C_FLAGS_RELEASE}")
-
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${JL_CPP_FLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${JL_CPP_FLAGS}")
 
 jl_get_make_flags(jl_make_flags)
 

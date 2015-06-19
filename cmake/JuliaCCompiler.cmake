@@ -12,7 +12,6 @@ jl_set_option(USECLANG Off)
 jl_set_option(USEMSVC Off)
 
 push_c_flags(CMAKE_CXX_FLAGS -std=c++11)
-set(JL_CPP_FLAGS)
 
 if(CMAKE_C_COMPILER_ID STREQUAL "AppleClang" OR
     CMAKE_C_COMPILER_ID STREQUAL "Clang")
@@ -34,7 +33,7 @@ if(CMAKE_C_COMPILER_ID STREQUAL "AppleClang" OR
       push_c_flags(CMAKE_C_FLAGS -mmacosx-version-min=10.6)
       push_c_flags(CMAKE_CXX_FLAGS -mmacosx-version-min=10.6)
     endif()
-    push_c_flags(JL_CPP_FLAGS -D_LARGEFILE_SOURCE -D_DARWIN_USE_64_BIT_INODE=1)
+    add_definitions(-D_LARGEFILE_SOURCE -D_DARWIN_USE_64_BIT_INODE=1)
   endif()
 elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU")
   jl_set_option(USEGCC On)
