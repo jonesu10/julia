@@ -251,21 +251,24 @@ foreach(jl_file ${core_img_SRCS} ${sys_img_SRCS})
   copy_jl(${jl_file})
 endforeach()
 
-# JULIA_CPU_TARGET
+# TODO JULIA_CPU_TARGET
+set(JULIA_CPU_TARGET native)
 
 add_custom_command(OUTPUT "${build_private_libdir}/inference0.o"
   "${build_private_libdir}/inference0.ji"
-  COMMAND "${build_bindir}/julia" -C native
-  --build "${build_private_libdir}/inference0" coreimg.jl
+  COMMAND "${build_bindir}/julia" -C ${JULIA_CPU_TARGET}
+  --build "${build_private_libdir}/inference0" -f coreimg.jl
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
   DEPENDS ${core_img_SRCS})
 
 add_custom_target(julia-inference0
   DEPENDS "${build_private_libdir}/inference0.o"
-  julia-ui  julia-copy-all-base)
+  julia-ui julia-copy-all-base)
 
-execute_process(COMMAND "${CMAKE_COMMAND}" -E
-  touch "${CMAKE_CURRENT_BINARY_DIR}/dummy.c")
+if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/dummy.c")
+  execute_process(COMMAND "${CMAKE_COMMAND}" -E
+    touch "${CMAKE_CURRENT_BINARY_DIR}/dummy.c")
+endif()
 
 add_library(julia-inference0-so MODULE "${CMAKE_CURRENT_BINARY_DIR}/dummy.c")
 
@@ -278,3 +281,28 @@ set_target_properties(julia-inference0-so PROPERTIES
   LIBRARY_OUTPUT_DIRECTORY "${build_private_libdir}")
 
 add_dependencies(julia-inference0-so julia-inference0)
+
+# TODO use inference.so if it exists
+add_custom_command(OUTPUT "${build_private_libdir}/inference.o"
+  "${build_private_libdir}/inference.ji"
+  COMMAND "${build_bindir}/julia" -C ${JULIA_CPU_TARGET}
+  --build "${build_private_libdir}/inference" -f
+  -J "${build_private_libdir}/inference0.ji" coreimg.jl
+  WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+  DEPENDS ${core_img_SRCS} julia-inference0-so)
+
+add_custom_target(julia-inference
+  DEPENDS "${build_private_libdir}/inference.o"
+  julia-ui julia-copy-all-base)
+
+add_library(julia-inference-so MODULE "${CMAKE_CURRENT_BINARY_DIR}/dummy.c")
+
+target_link_libraries(julia-inference-so
+  "${build_private_libdir}/inference.o"
+  libjulia)
+
+set_target_properties(julia-inference-so PROPERTIES
+  OUTPUT_NAME inference
+  LIBRARY_OUTPUT_DIRECTORY "${build_private_libdir}")
+
+add_dependencies(julia-inference-so julia-inference)
